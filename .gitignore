@@ -1,0 +1,39 @@
+# =========================
+# OS-specific files
+# =========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# =========================
+# Logs & Environment
+# =========================
+*.log
+*.tmp
+*.temp
+*.pid
+*.seed
+*.cover
+.env
+.env.*.local
+
+# =========================
+# Dependency directories
+# =========================
+node_modules/
+
+
+# =========================
+# Build outputs
+# =========================
+dist/
+build/
+out/
+tmp/
+.cache/
+coverage/
+*.tgz
+
+

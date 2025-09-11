@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hand Landmarker Demo</title>
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 script-src 'self' 'unsafe-eval' blob:;
+                 style-src 'self' 'unsafe-inline';
+                 connect-src 'self' ws://localhost:*;
+                 media-src 'self' blob:;
+                 img-src 'self' data:;">
+  <script src="dist/bundle.js"></script>
+  <link rel="stylesheet" href="dist/styles.css">
+</head>
+<body>
+  <h1>Hand Landmarker Demo</h1>
+  <div id="canvas-container">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- Webcam video feed -->
+  <video id="video" autoplay playsinline muted></video>
+
+  <!-- If you want camera selection later -->
+  <div id="camera-select" style="margin-top: 10px; display: none;">
+    <label for="devices">Choose camera:</label>
+    <select id="devices"></select>
+  </div>
+</body>
+</html>
