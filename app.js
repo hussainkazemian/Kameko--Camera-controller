@@ -84,32 +84,6 @@ async function init() {
   console.log("Starting app initialization...");
 
   try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoInputs = devices.filter(d => d.kind === "videoinput");
-    if (videoInputs.length === 0) {
-      alert("No webcam detected. Please connect a camera.");
-      return;
-    }
-
-    const deviceSelect = document.getElementById("devices");
-    const deviceContainer = document.getElementById("camera-select");
-    if (videoInputs.length > 1 && deviceSelect) {
-      deviceContainer.style.display = "block";
-      videoInputs.forEach((d, i) => {
-        const option = document.createElement("option");
-        option.value = d.deviceId;
-        option.text = d.label || `Camera ${i + 1}`;
-        deviceSelect.appendChild(option);
-      });
-    }
-
-    const vision = await FilesetResolver.forVisionTasks("./dist/wasm");
-    handLandmarker = await HandLandmarker.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: "app/models/hand_landmarker.task", delegate: "GPU" },
-      runningMode,
-      numHands: 2
-    });
-
     const canvas = document.getElementById("canvas");
     initThreeJS(canvas);
     window.addEventListener("resize", onWindowResize, false);
@@ -117,27 +91,86 @@ async function init() {
     const video = document.getElementById("video");
     video.style.transform = "scaleX(-1)"; // mirror for user view
 
+    // Helper to stop any existing stream tracks before switching
+    function stopCurrentStream() {
+      const s = video.srcObject;
+      if (s && s.getTracks) {
+        s.getTracks().forEach(t => t.stop());
+      }
+      video.srcObject = null;
+    }
+
     async function startStream(deviceId) {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: deviceId ? { exact: deviceId } : undefined }, audio: false });
+        // If switching cameras, stop previous tracks
+        if (video.srcObject) {
+          stopCurrentStream();
+        }
+
+        const constraints = {
+          video: deviceId ? { deviceId: { exact: deviceId } } : true,
+          audio: false
+        };
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
         await video.play();
         console.log("Webcam stream started");
+        return stream;
       } catch (error) {
         console.error("Webcam access failed:", error);
-        alert("Failed to access webcam. Check permissions.");
+        // Provide clearer user feedback based on error type
+        if (error && (error.name === 'NotAllowedError' || error.name === 'SecurityError')) {
+          alert("Camera access was denied. Please allow access and try again.");
+        } else if (error && error.name === 'NotFoundError') {
+          alert("No camera found. Please connect a webcam and try again.");
+        } else {
+          alert("Failed to access webcam. Check permissions and device availability.");
+        }
+        throw error;
       }
     }
 
-    await startStream(videoInputs[0].deviceId);
+    // 1) Request camera access first to trigger permission prompt
+    await startStream();
 
-    if (deviceSelect) {
-      deviceSelect.addEventListener("change", async () => {
-        await startStream(deviceSelect.value);
-      });
+    // 2) After permission granted and a stream is active, enumerate devices
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoInputs = devices.filter(d => d.kind === "videoinput");
+
+      const deviceSelect = document.getElementById("devices");
+      const deviceContainer = document.getElementById("camera-select");
+      if (videoInputs.length > 1 && deviceSelect) {
+        deviceContainer.style.display = "block";
+        // Clear existing options first
+        deviceSelect.innerHTML = "";
+        videoInputs.forEach((d, i) => {
+          const option = document.createElement("option");
+          option.value = d.deviceId;
+          option.text = d.label || `Camera ${i + 1}`;
+          deviceSelect.appendChild(option);
+        });
+
+        deviceSelect.addEventListener("change", async () => {
+          await startStream(deviceSelect.value);
+        });
+      }
+    } catch (e) {
+      console.warn("Device enumeration failed:", e);
     }
 
-    await new Promise(resolve => { video.onloadedmetadata = () => resolve(); });
+    // 3) Initialize Mediapipe after we know the environment is ready
+    const vision = await FilesetResolver.forVisionTasks("./dist/wasm");
+    handLandmarker = await HandLandmarker.createFromOptions(vision, {
+      baseOptions: { modelAssetPath: "app/models/hand_landmarker.task", delegate: "GPU" },
+      runningMode,
+      numHands: 2
+    });
+
+    await new Promise(resolve => {
+      if (video.readyState >= 2) return resolve();
+      video.onloadedmetadata = () => resolve();
+    });
 
     detect();
 
