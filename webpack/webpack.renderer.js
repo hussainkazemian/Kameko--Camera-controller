@@ -33,7 +33,9 @@ module.exports = {
                 // optional tray icon if provided by the project
                 { from: 'assets/icon.png', to: 'icon.png', noErrorOnMissing: true },
                 { from: 'assets/icon.ico', to: 'icon.ico', noErrorOnMissing: true },
-                { from: 'assets/icon.icns', to: 'icon.icns', noErrorOnMissing: true }
+                { from: 'assets/icon.icns', to: 'icon.icns', noErrorOnMissing: true },
+                // copy images folder if present (for tray/window icons like webcam2.png)
+                { from: 'images', to: 'images', noErrorOnMissing: true },
             ]
         }),
         new MiniCssExtractPlugin({ filename: 'styles.css' })

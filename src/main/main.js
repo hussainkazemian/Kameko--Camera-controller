@@ -16,11 +16,13 @@ function createWindow() {
         return undefined;
     };
 
-    const platformIcon = process.platform === 'win32'
+    // Prefer project images if available, then fall back to platform icon files
+    const preferredPng = resolveAsset('images/webcam_large2.png') || resolveAsset('images/webcam2.png') || resolveAsset('images/webcam.png') || resolveAsset('images/webcam_large.png');
+    const platformIcon = preferredPng || (process.platform === 'win32'
         ? resolveAsset('icon.ico')
         : process.platform === 'darwin'
             ? resolveAsset('icon.icns')
-            : resolveAsset('icon.png');
+            : resolveAsset('icon.png'));
 
     const win = new BrowserWindow({
         width: 1280,
@@ -67,7 +69,7 @@ function createWindow() {
     // Optional: system tray to indicate the app is running (no menu changes)
     let tray;
     try {
-        const trayImagePath = resolveAsset('icon.png') || resolveAsset('icon.ico');
+        const trayImagePath = resolveAsset('images/webcam2.png') || resolveAsset('images/webcam.png') || resolveAsset('icon.png') || resolveAsset('icon.ico');
         if (trayImagePath) {
             const image = nativeImage.createFromPath(trayImagePath);
             if (!image.isEmpty()) {
