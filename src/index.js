@@ -7,6 +7,8 @@ const {
   nativeImage,
 } = require("electron/main");
 
+const path = require("path");
+
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
 
@@ -58,7 +60,7 @@ const createWindow = () => {
     overlay.restore();
   });
 
-  overlay.loadFile("overlay.html");
+  overlay.loadFile(path.join(__dirname, "public/overlay.html"));
   //Makes it so user can click an interract through window.
   overlay.setIgnoreMouseEvents(true);
 
@@ -71,7 +73,7 @@ const createWindow = () => {
     icon: "./images/webcam_large2.png",
   });
 
-  settingsWindow.loadFile("settings.html");
+  settingsWindow.loadFile(path.join(__dirname, "public/settings.html"));
   //closing windows now wont delete the windows but hide it
   settingsWindow.on("close", (e) => {
     e.preventDefault(); // Prevents quit
