@@ -21,3 +21,7 @@ canvas {
   height: 100vh;
   object-fit: cover;
 }
+
+video {
+  display: none;
+}
