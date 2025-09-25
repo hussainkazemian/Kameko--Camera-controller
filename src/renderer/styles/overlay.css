@@ -2,24 +2,10 @@
   background-color: rgba(0, 0, 0, 0); /* Transparent background */
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  margin: 0;
-  padding: 16px;
-  box-sizing: border-box;
-  color: #eaeaea;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
-    Noto Sans, sans-serif;
-}
-
 #canvas-container {
-  width: 100vw;
+  width: 100%;
   /* larger, responsive */
-  height: 100vh;
+  height: 100%;
   /* taller viewport */
   border: 1px solid #333;
   display: flex;

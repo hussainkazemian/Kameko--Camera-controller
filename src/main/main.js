@@ -5,6 +5,7 @@ const {
   Tray,
   Menu,
   nativeImage,
+  dialog,
   session,
 } = require("electron");
 
