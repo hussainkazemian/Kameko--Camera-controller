@@ -50,11 +50,10 @@ const createWindow = () => {
   const overlay = new BrowserWindow({
     width,
     height,
-    fullscreen: true,
-    resizable: false,
-    transparent: true,
-    alwaysOnTop: true,
     frame: false,
+    transparent: true,
+    resizable: false,
+    alwaysOnTop: true,
     skipTaskbar: true,
   });
 
@@ -79,15 +78,17 @@ const createWindow = () => {
     }
   );
 
-  //Prevents overlay from being minimized
-  overlay.on("minimize", (event) => {
-    event.preventDefault();
-    overlay.restore();
-  });
-
   overlay.loadFile(path.join(__dirname, "overlay.html"));
   //Makes it so user can click an interract through window.
+  overlay.setAlwaysOnTop(true, "screensaver");
+  overlay.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: true,
+  });
   overlay.setIgnoreMouseEvents(true);
+
+  overlay.on("blur", () => {
+    overlay.focus();
+  });
 
   const settingsWindow = new BrowserWindow({
     width,

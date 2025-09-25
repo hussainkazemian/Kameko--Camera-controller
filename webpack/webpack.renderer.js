@@ -29,6 +29,7 @@ module.exports = {
         { from: "node_modules/@mediapipe/tasks-vision/wasm", to: "wasm" },
         // copy renderer html and models
         { from: "src/renderer/overlay.html", to: "overlay.html" },
+        { from: "src/renderer/settings.html", to: "settings.html" },
         {
           from: "app/models/hand_landmarker.task",
           to: "app/models/hand_landmarker.task",
@@ -42,6 +43,7 @@ module.exports = {
       ],
     }),
     new MiniCssExtractPlugin({ filename: "overlay.css" }),
+    new MiniCssExtractPlugin({ filename: "settings.css" }),
   ],
   resolve: {
     extensions: [".js"],
