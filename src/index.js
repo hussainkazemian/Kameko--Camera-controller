@@ -12,6 +12,7 @@ const path = require("path");
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
 
+// Creates tray on windows desktop corner
 const createTray = () => {
   tray = new Tray("./images/webcam2.png");
   tray.setToolTip("Camera Controller");
@@ -39,6 +40,7 @@ const createTray = () => {
   tray.setContextMenu(contextMenu);
 };
 
+// Creates all windows
 const createWindow = () => {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.size;

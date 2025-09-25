@@ -1,21 +1,21 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <title>Hello from Electron renderer!</title>
-    <link href="./overlay.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gesture Recognizer Demo</title>
+    <script type="module" src="../model/main.js" defer></script>
+
   </head>
   <body>
-    <h1>Hello from Electron renderer!</h1>
-    <p>👋</p>
-    <p id="info"></p>
+      <div id="liveView">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas
+          class="output_canvas"
+          id="output_canvas"
+        ></canvas>
+        <p id="gesture_output" class="output"></p>
+      </div>
+    </div>
   </body>
 </html>
