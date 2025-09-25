@@ -41,6 +41,7 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: "overlay.css",
+      filename: "settings.html",
     }),
   ],
 };

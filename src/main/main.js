@@ -79,16 +79,18 @@ const createWindow = () => {
     }
   );
 
-  //Prevents overlay from being minimized
-  overlay.on("minimize", (event) => {
-    event.preventDefault();
-    overlay.restore();
-  });
-
   overlay.loadFile(path.join(__dirname, "overlay.html"));
   overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
-  overlay.setIgnoreMouseEvents(false);
+
+  overlay.setAlwaysOnTop(true, "screensaver");
+  overlay.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: true,
+  });
+  overlay.setIgnoreMouseEvents(false); // FALSE FOR TESTING REASONS
+  overlay.on("blur", () => {
+    overlay.focus();
+  });
 
   const settingsWindow = new BrowserWindow({
     width,
