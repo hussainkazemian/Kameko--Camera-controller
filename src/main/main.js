@@ -50,11 +50,11 @@ const createWindow = () => {
   const overlay = new BrowserWindow({
     width,
     height,
-    fullscreen: true,
+    /*     fullscreen: true,
     resizable: false,
     transparent: true,
     alwaysOnTop: true,
-    frame: false,
+    frame: false, */
     skipTaskbar: true,
   });
 
@@ -86,8 +86,9 @@ const createWindow = () => {
   });
 
   overlay.loadFile(path.join(__dirname, "overlay.html"));
+  overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
-  overlay.setIgnoreMouseEvents(true);
+  overlay.setIgnoreMouseEvents(false);
 
   const settingsWindow = new BrowserWindow({
     width,

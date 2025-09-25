@@ -8,7 +8,7 @@ import {
 import { initHandLandmarker } from "./media/mediapipe";
 
 // Entry bootstrapping of the renderer app.
-(async function main() {
+async function main() {
   const status = document.getElementById("status");
   const canvas = document.getElementById("canvas");
   const video = document.getElementById("video");
@@ -29,81 +29,89 @@ import { initHandLandmarker } from "./media/mediapipe";
     console.log("[status]", msg);
   }
 
-  try {
+  // Enumerate Video inpput devices then executes a prompt for video detection --> requestStream
+  const inputs = await enumerateVideoInputs().then(async (_inputs) => {
+    if (_inputs.length === 0) {
+      // if no devices found Will return empty array withot executing
+      setStatus("No Video inpput device found...");
+      return [];
+    }
     setStatus("Requesting camera access...");
-    await requestStream(video); // triggers permission prompt
+    await requestStream(video, _inputs[0].deviceId, detect); // triggers permission prompt and starts detection
     setStatus("Camera access granted. Enumerating devices...");
+    return _inputs; // returns _inputs for const inputs
+  });
 
-    // Enumerate after permission to get labels
-    const inputs = await enumerateVideoInputs();
-    if (inputs.length > 1) {
-      deviceContainer.style.display = "block";
-      deviceSelect.innerHTML = "";
-      inputs.forEach((d, i) => {
-        const opt = document.createElement("option");
-        opt.value = d.deviceId;
-        opt.text = d.label || `Camera ${i + 1}`;
-        deviceSelect.appendChild(opt);
-      });
-      deviceSelect.addEventListener("change", async () => {
-        try {
-          setStatus(
-            `Switching to: ${
-              deviceSelect.options[deviceSelect.selectedIndex].text
-            }`
-          );
-          await requestStream(video, deviceSelect.value);
-        } catch (e) {
-          setStatus(e.message || "Failed to switch camera");
-        }
-      });
-    }
-
-    setStatus("Loading hand model...");
-    const { handLandmarker } = await initHandLandmarker();
-
-    setStatus("Starting detection...");
-    await new Promise((resolve) => {
-      if (video.readyState >= 2) return resolve();
-      video.onloadedmetadata = () => resolve();
+  // if camera devices have been found camera selection dropdown menu will be enamble
+  // TODO move to setting menu
+  if (inputs.length > 1) {
+    deviceContainer.style.display = "block";
+    deviceSelect.innerHTML = "";
+    inputs.forEach((d, i) => {
+      const opt = document.createElement("option");
+      opt.value = d.deviceId;
+      opt.text = d.label || `Camera ${i + 1}`;
+      deviceSelect.appendChild(opt);
     });
-
-    async function detect() {
-      if (
-        !handLandmarker ||
-        video.readyState < 2 ||
-        video.videoWidth === 0 ||
-        video.videoHeight === 0
-      ) {
-        requestAnimationFrame(detect);
-        return;
-      }
+    deviceSelect.addEventListener("change", async () => {
       try {
-        const ts = performance.now();
-        const results = await handLandmarker.detectForVideo(video, ts);
-        scene.clearHands();
-
-        // Minimal gating: if score is present and extremely low, skip; otherwise render
-        const minScore = 0.1;
-        if (results.landmarks && results.landmarks.length > 0) {
-          for (let i = 0; i < results.landmarks.length; i++) {
-            const lm = results.landmarks[i];
-            const handness = results.handedness?.[i];
-            const score = handness?.score;
-            if (typeof score === "number" && score < minScore) continue;
-            const handLabel = handness?.categoryName || "Unknown";
-            scene.updateHand(lm, handLabel);
-          }
-        }
-        scene.render();
+        setStatus(
+          `Switching to: ${
+            deviceSelect.options[deviceSelect.selectedIndex].text
+          }`
+        );
+        await requestStream(video, deviceSelect.value, detect);
       } catch (e) {
-        setStatus(e.message || "Detection error");
+        setStatus(e.message + "Failed to switch camera");
       }
-      requestAnimationFrame(detect);
-    }
-
-    detect();
-  } catch (e) {
-    setStatus(e.message || "Initialization failed");
+    });
   }
-})();
+
+  // THIS IS CURENTLY NOT USED AND SHOULD NOT BE USED UNLES NECESSARY
+  /*   setStatus("Starting detection...");
+  await new Promise((resolve) => {
+    if (video.readyState >= 2) return resolve();
+    video.onloadedmetadata = () => resolve();
+  }); */
+
+  async function detect(handLandmarker = undefined) {
+    if (!handLandmarker) {
+      setStatus("Loading hand model...");
+      handLandmarker = (await initHandLandmarker()).handLandmarker;
+    }
+    if (
+      video.readyState < 2 ||
+      video.videoWidth === 0 ||
+      video.videoHeight === 0
+    ) {
+      // will stop the function if video element is not ready
+      // technically redundant due to a check on a higher level
+      console.error("Video was not ready");
+      return;
+    }
+    try {
+      const ts = performance.now();
+      const results = await handLandmarker.detectForVideo(video, ts);
+      scene.clearHands();
+
+      // Minimal gating: if score is present and extremely low, skip; otherwise render
+      const minScore = 0.1;
+      if (results.landmarks && results.landmarks.length > 0) {
+        for (let i = 0; i < results.landmarks.length; i++) {
+          const lm = results.landmarks[i];
+          const handness = results.handedness?.[i];
+          const score = handness?.score;
+          if (typeof score === "number" && score < minScore) continue;
+          const handLabel = handness?.categoryName || "Unknown";
+          scene.updateHand(lm, handLabel);
+        }
+      }
+      scene.render();
+    } catch (e) {
+      setStatus(e.message + "Detection error");
+    }
+    requestAnimationFrame(() => detect(handLandmarker));
+  }
+}
+
+main();
