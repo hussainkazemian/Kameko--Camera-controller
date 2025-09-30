@@ -1,11 +1,4 @@
-const {
-  app,
-  BrowserWindow,
-  screen,
-  Tray,
-  Menu,
-  nativeImage,
-} = require("electron/main");
+const { app, BrowserWindow, screen, Tray, Menu } = require("electron");
 
 const path = require("path");
 
@@ -36,7 +29,6 @@ const createTray = () => {
       },
     },
   ]);
-
   tray.setContextMenu(contextMenu);
 };
 
@@ -54,6 +46,11 @@ const createWindow = () => {
     resizable: false,
     hasShadow: false,
     skipTaskbar: true,
+    webPreferences: {
+      nodeIntegration: true, //  enables or disables Node.js APIs in the renderer process.
+      contextIsolation: false,
+      // Whether to run Electron APIs and the specified preload script in a separate JavaScript context. Defaults to true.
+    },
   });
 
   //Prevents overlay from being minimized
@@ -72,7 +69,7 @@ const createWindow = () => {
     resizable: true,
     frame: true,
     title: "Settings",
-    icon: "./images/webcam_large2.png",
+    icon: "./images/webcam.png",
   });
 
   settingsWindow.loadFile(path.join(__dirname, "public/settings.html"));

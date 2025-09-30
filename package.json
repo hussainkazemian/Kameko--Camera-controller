@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mediapipe/tasks-vision": "^0.10.21",
+    "@mediapipe/tasks-vision": "^0.10.3",
+    "@nut-tree-fork/nut-js": "^4.2.6",
     "electron": "^38.0.0"
   }
 }

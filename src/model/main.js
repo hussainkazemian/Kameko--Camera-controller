@@ -3,6 +3,7 @@ import {
   FilesetResolver,
   DrawingUtils,
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3";
+const { keyboard, Key } = require("@nut-tree-fork/nut-js");
 
 // Luodaan Gesture Recognizer *******************
 
@@ -103,9 +104,38 @@ const predictWebcam = async () => {
       });
     }
   }
+
+  // Eleenn tunnistus
+  if (results.gestures && results.gestures.length > 0) {
+    const gesture = results.gestures[0][0];
+    console.log(`Tunnistettu ele: ${gesture.categoryName} (${gesture.score})`);
+    document.getElementById("gesture").innerHTML =
+      `<p>Ele: ${gesture.categoryName}</p>`;
+
+    const key_output = document.getElementById("key_output");
+
+    // tunnistettu ele nut.js
+    if (gesture && gesture.categoryName === "Thumb_Up") {
+      // console.log("w");
+      key_output.innerHTML = "W";
+      await keyboard.pressKey(Key.W);
+      await keyboard.releaseKey(Key.W);
+    } else {
+      key_output.innerHTML = `Key: `;
+    }
+  }
+
   canvasCtx.restore();
 
   if (webcamRunning === true) {
     window.requestAnimationFrame(predictWebcam);
   }
+  // nut.js testi
+  // window.addEventListener("keydown", async (event) => {
+  //   if (event.key.toLowerCase() === "w") {
+  //     await keyboard.pressKey(Key.W);
+  //     await keyboard.releaseKey(Key.W);
+  //     document.getElementById("key_output").innerText = "W painettu!";
+  //   }
+  // });
 };
