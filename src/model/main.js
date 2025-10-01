@@ -119,7 +119,19 @@ const predictWebcam = async () => {
       // console.log("w");
       key_output.innerHTML = "W";
       await keyboard.pressKey(Key.W);
-      await keyboard.releaseKey(Key.W);
+      // await keyboard.releaseKey(Key.W); // tsekkaa tää myöhemmin
+    } else if (gesture && gesture.categoryName === "Thumb_Down") {
+      key_output.innerHTML = "S";
+      await keyboard.pressKey(Key.S);
+      await keyboard.releaseKey(Key.S);
+    } else if (gesture && gesture.categoryName === "Victory") {
+      key_output.innerHTML = "A";
+      await keyboard.pressKey(Key.A);
+      await keyboard.releaseKey(Key.A);
+    } else if (gesture && gesture.categoryName === "Open_Palm") {
+      key_output.innerHTML = "D";
+      await keyboard.pressKey(Key.D);
+      await keyboard.releaseKey(Key.D);
     } else {
       key_output.innerHTML = `Key: `;
     }
