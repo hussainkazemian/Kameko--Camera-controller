@@ -1,5 +1,10 @@
 const { app, BrowserWindow, screen, Tray, Menu } = require("electron");
 
+const is_mac = process.platform === "darwin";
+if (is_mac) {
+  app.dock.hide(); // - 1 -
+}
+
 const path = require("path");
 
 // save a reference to the Tray object globally to avoid garbage collection
@@ -52,6 +57,8 @@ const createWindow = () => {
       // Whether to run Electron APIs and the specified preload script in a separate JavaScript context. Defaults to true.
     },
   });
+  overlay.setAlwaysOnTop(true, "screen-saver"); //Keeps window on top of fullscreen apps
+  overlay.setVisibleOnAllWorkspaces(true);
 
   //Prevents overlay from being minimized
   overlay.on("minimize", (event) => {

@@ -119,7 +119,7 @@ const predictWebcam = async () => {
       // console.log("w");
       key_output.innerHTML = "W";
       await keyboard.pressKey(Key.W);
-      // await keyboard.releaseKey(Key.W); // tsekkaa tää myöhemmin
+      await keyboard.releaseKey(Key.W); // tsekkaa tää myöhemmin
     } else if (gesture && gesture.categoryName === "Thumb_Down") {
       key_output.innerHTML = "S";
       await keyboard.pressKey(Key.S);
