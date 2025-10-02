@@ -4,7 +4,7 @@ const {
   screen,
   Tray,
   Menu,
-  nativeImage,
+  /* nativeImage, */
   dialog,
   session,
 } = require("electron");
@@ -13,6 +13,8 @@ const path = require("path");
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
+
+const dir = __dirname;
 
 // Creates tray on windows desktop corner
 const createTray = () => {
@@ -50,12 +52,16 @@ const createWindow = () => {
   const overlay = new BrowserWindow({
     width,
     height,
-    /*     fullscreen: true,
-    resizable: false,
+    frame: false,
     transparent: true,
     alwaysOnTop: true,
-    frame: false, */
+    resizable: false,
+    hasShadow: false,
     skipTaskbar: true,
+    /*     webPreferences: {
+      nodeIntegration: true, //  enables or disables Node.js APIs in the renderer process.
+      contextIsolation: false,
+    }, */
   });
 
   // Allow media permission via app-level confirmation (renderer will still prompt OS)
@@ -79,18 +85,18 @@ const createWindow = () => {
     }
   );
 
-  overlay.loadFile(path.join(__dirname, "overlay.html"));
-  overlay.webContents.openDevTools();
+  overlay.loadFile(path.join(dir, "overlay.html"));
+  // overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screensaver");
   overlay.setVisibleOnAllWorkspaces(true, {
     visibleOnFullScreen: true,
   });
-  overlay.setIgnoreMouseEvents(false); // FALSE FOR TESTING REASONS
-  overlay.on("blur", () => {
+  overlay.setIgnoreMouseEvents(true);
+  /*   overlay.on("blur", () => {
     overlay.focus();
-  });
+  }); */ // DISABLED FOR TESTING REASONS
 
   const settingsWindow = new BrowserWindow({
     width,
@@ -101,7 +107,7 @@ const createWindow = () => {
     icon: "./images/webcam_large2.png",
   });
 
-  settingsWindow.loadFile(path.join(__dirname, "settings.html"));
+  settingsWindow.loadFile(path.join(dir, "settings.html"));
   //closing windows now wont delete the windows but hide it
   settingsWindow.on("close", (e) => {
     e.preventDefault(); // Prevents quit
@@ -119,7 +125,7 @@ app.whenReady().then(() => {
     }
   });
 
-  app.on("before-quit", function (evt) {
+  app.on("before-quit", function () {
     tray.destroy();
   });
 });

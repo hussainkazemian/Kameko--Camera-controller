@@ -5,9 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "electron .",
-    "build": "npm-run-all -s build:main build:renderer",
-    "build:main": "webpack --config webpack/webpack.main.js",
-    "build:renderer": "webpack --config webpack/webpack.renderer.js"
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",

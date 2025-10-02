@@ -7,6 +7,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' blob: 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' ws://localhost:*; media-src 'self' blob:; img-src 'self' data:;"
     />
+    <script src="./bundle.js" defer></script>
     <link rel="stylesheet" href="./overlay.css" />
   </head>
 
@@ -16,7 +17,10 @@
       <canvas id="canvas"></canvas>
       <video id="video" autoplay playsinline muted></video>
     </div>
+    <div id="camera-select" style="margin-top: 10px; display: none">
+      <label for="devices">Choose camera:</label>
+      <select id="devices"></select>
+    </div>
     <div id="status" class="status"></div>
-    <script src="./bundle.js"></script>
   </body>
 </html>

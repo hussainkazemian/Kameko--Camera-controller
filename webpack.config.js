@@ -2,46 +2,74 @@ const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = {
-  entry: "./app.js",
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "bundle.js",
-  },
-  mode: "production",
-  resolve: {
-    fallback: {
-      path: require.resolve("path-browserify"),
-      fs: false,
+module.exports = [
+  {
+    target: "electron-main",
+    mode: "production",
+    entry: path.resolve(__dirname, "./src/electron/main.js"),
+    output: {
+      path: path.resolve(__dirname, "./dist"),
+      filename: "main.js",
     },
+    node: { __dirname: false, __filename: false },
   },
-  module: {
-    rules: [
-      {
-        test: /\.wasm$/,
-        type: "asset/resource",
-        generator: {
-          filename: "wasm/[name][ext]",
-        },
-      },
-      {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
-      },
-    ],
+  {
+    target: "electron-preload",
+    mode: "production",
+    entry: path.resolve(__dirname, "./src/electron/preload.js"),
+    output: {
+      path: path.resolve(__dirname, "./dist"),
+      filename: "preload.js",
+    },
+    node: { __dirname: false, __filename: false },
   },
-  plugins: [
-    new CopyWebpackPlugin({
-      patterns: [
+
+  {
+    target: "electron-renderer",
+    mode: "production",
+    entry: path.resolve(__dirname, "./src/pages/app/index.js"),
+    output: {
+      path: path.resolve(__dirname, "./dist"),
+      filename: "bundle.js",
+    },
+    module: {
+      rules: [
         {
-          from: "node_modules/@mediapipe/tasks-vision/wasm",
-          to: "wasm",
+          test: /\.css$/,
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
+        },
+        {
+          test: /\.wasm$/,
+          type: "asset/resource",
+          generator: { filename: "wasm/[name][ext]" },
         },
       ],
-    }),
-    new MiniCssExtractPlugin({
-      filename: "overlay.css",
-      filename: "settings.html",
-    }),
-  ],
-};
+    },
+    plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: "node_modules/@mediapipe/tasks-vision/wasm", to: "wasm" },
+          // copy renderer html and models
+          { from: "src/pages/overlay.html", to: "overlay.html" },
+          { from: "src/pages/settings.html", to: "settings.html" },
+          {
+            from: "models/hand_landmarker.task",
+            to: "models/hand_landmarker.task",
+          },
+          // optional tray icon if provided by the project
+          { from: "assets/icon.png", to: "icon.png", noErrorOnMissing: true },
+          { from: "assets/icon.ico", to: "icon.ico", noErrorOnMissing: true },
+          { from: "assets/icon.icns", to: "icon.icns", noErrorOnMissing: true },
+          // copy images folder if present (for tray/window icons like webcam2.png)
+          { from: "images", to: "images", noErrorOnMissing: true },
+        ],
+      }),
+      new MiniCssExtractPlugin({ filename: "overlay.css" }),
+      new MiniCssExtractPlugin({ filename: "settings.css" }),
+    ],
+    resolve: {
+      extensions: [".js"],
+      fallback: { fs: false, path: require.resolve("path-browserify") },
+    },
+  },
+];
