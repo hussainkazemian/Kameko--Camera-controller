@@ -1,4 +1,12 @@
-const { app, BrowserWindow, screen, Tray, Menu } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  screen,
+  Tray,
+  Menu,
+  session,
+  dialog,
+} = require("electron");
 const path = require("path");
 
 const is_mac = process.platform === "darwin";
@@ -40,6 +48,27 @@ const createTray = () => {
 const createWindow = () => {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.size;
+
+  // Allow media permission via app-level confirmation (renderer will still prompt OS)
+  session.defaultSession.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      if (permission === "media") {
+        dialog
+          .showMessageBox(null, {
+            type: "question",
+            buttons: ["Allow", "Deny"],
+            title: "Camera Permission",
+            message:
+              "This app needs access to your webcam. Do you want to allow it?",
+          })
+          .then((result) => {
+            callback(result.response === 0);
+          });
+      } else {
+        callback(false);
+      }
+    }
+  );
 
   const overlay = new BrowserWindow({
     width,
