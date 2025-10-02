@@ -1,7 +1,8 @@
 * {
   margin: 0;
   padding: 0;
-  background-color: rgba(0, 0, 0, 0); /* Transparent background */
+  background-color: rgba(0, 0, 0, 0);
+  /* Transparent background */
 }
 
 .liveView {
@@ -20,6 +21,10 @@ canvas {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+  /* Mirror horizontally to match user's perspective (selfie view)
+     This fixes left/right appearing swapped during hand recognition */
+  transform: scaleX(-1);
+  transform-origin: center;
 }
 
 video {
@@ -40,6 +45,7 @@ h1 {
   text-align: center;
   background: transparent;
 }
+
 #outputs {
   position: absolute;
   bottom: 50px;
