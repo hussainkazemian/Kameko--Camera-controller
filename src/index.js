@@ -1,11 +1,10 @@
 const { app, BrowserWindow, screen, Tray, Menu } = require("electron");
+const path = require("path");
 
 const is_mac = process.platform === "darwin";
 if (is_mac) {
   app.dock.hide(); // macille piilottaa dockin
 }
-
-const path = require("path");
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
