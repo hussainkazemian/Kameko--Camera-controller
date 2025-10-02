@@ -115,26 +115,31 @@ const predictWebcam = async () => {
     const key_output = document.getElementById("key_output");
 
     let currentEle = gesture.categoryName;
+    let currentKey;
 
     // tunnistettu ele -> nut.js key press
     if (currentEle === "Thumb_Up") {
       key_output.innerText = "W";
-      await keyboard.pressKey(Key.W);
+      currentKey = await keyboard.pressKey(Key.W);
     } else if (currentEle === "Thumb_Down") {
       key_output.innerText = "S";
-      await keyboard.pressKey(Key.S);
+      currentKey = await keyboard.pressKey(Key.S);
     } else if (currentEle === "Victory") {
       key_output.innerText = "A";
-      await keyboard.pressKey(Key.A);
+      currentKey = await keyboard.pressKey(Key.A);
     } else if (currentEle === "Open_Palm") {
       key_output.innerText = "D";
-      await keyboard.pressKey(Key.D);
+      currentKey = await keyboard.pressKey(Key.D);
+    } else if (currentEle === "Closed_Fist") {
+      key_output.innerText = "space";
+      currentKey = await keyboard.pressKey(Key.Space);
     } else {
       key_output.innerText = `Key: `;
       await keyboard.releaseKey(Key.W);
       await keyboard.releaseKey(Key.A);
       await keyboard.releaseKey(Key.S);
       await keyboard.releaseKey(Key.D);
+      await keyboard.releaseKey(Key.Space);
     }
   }
   canvasCtx.restore();
