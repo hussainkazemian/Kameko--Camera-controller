@@ -108,46 +108,38 @@ const predictWebcam = async () => {
   // Eleenn tunnistus
   if (results.gestures && results.gestures.length > 0) {
     const gesture = results.gestures[0][0];
-    console.log(`Tunnistettu ele: ${gesture.categoryName} (${gesture.score})`);
+    console.log(`Tunnistettu ele: ${gesture.categoryName}`);
     document.getElementById("gesture").innerHTML =
       `<p>Ele: ${gesture.categoryName}</p>`;
 
     const key_output = document.getElementById("key_output");
 
-    // tunnistettu ele nut.js
-    if (gesture && gesture.categoryName === "Thumb_Up") {
-      // console.log("w");
-      key_output.innerHTML = "W";
+    let currentEle = gesture.categoryName;
+
+    // tunnistettu ele -> nut.js key press
+    if (currentEle === "Thumb_Up") {
+      key_output.innerText = "W";
       await keyboard.pressKey(Key.W);
-      await keyboard.releaseKey(Key.W); // tsekkaa tää myöhemmin
-    } else if (gesture && gesture.categoryName === "Thumb_Down") {
-      key_output.innerHTML = "S";
+    } else if (currentEle === "Thumb_Down") {
+      key_output.innerText = "S";
       await keyboard.pressKey(Key.S);
-      await keyboard.releaseKey(Key.S);
-    } else if (gesture && gesture.categoryName === "Victory") {
-      key_output.innerHTML = "A";
+    } else if (currentEle === "Victory") {
+      key_output.innerText = "A";
       await keyboard.pressKey(Key.A);
-      await keyboard.releaseKey(Key.A);
-    } else if (gesture && gesture.categoryName === "Open_Palm") {
-      key_output.innerHTML = "D";
+    } else if (currentEle === "Open_Palm") {
+      key_output.innerText = "D";
       await keyboard.pressKey(Key.D);
-      await keyboard.releaseKey(Key.D);
     } else {
-      key_output.innerHTML = `Key: `;
+      key_output.innerText = `Key: `;
+      await keyboard.releaseKey(Key.W);
+      await keyboard.releaseKey(Key.A);
+      await keyboard.releaseKey(Key.S);
+      await keyboard.releaseKey(Key.D);
     }
   }
-
   canvasCtx.restore();
 
   if (webcamRunning === true) {
     window.requestAnimationFrame(predictWebcam);
   }
-  // nut.js testi
-  // window.addEventListener("keydown", async (event) => {
-  //   if (event.key.toLowerCase() === "w") {
-  //     await keyboard.pressKey(Key.W);
-  //     await keyboard.releaseKey(Key.W);
-  //     document.getElementById("key_output").innerText = "W painettu!";
-  //   }
-  // });
 };
