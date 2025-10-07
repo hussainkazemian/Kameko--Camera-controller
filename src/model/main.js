@@ -114,33 +114,55 @@ const predictWebcam = async () => {
 
     const key_output = document.getElementById("key_output");
 
-    let currentEle = gesture.categoryName;
+    let currentGesture = gesture.categoryName;
     let currentKey;
 
-    // tunnistettu ele -> nut.js key press
-    if (currentEle === "Thumb_Up") {
-      key_output.innerText = "W";
-      currentKey = await keyboard.pressKey(Key.W);
-    } else if (currentEle === "Thumb_Down") {
-      key_output.innerText = "S";
-      currentKey = await keyboard.pressKey(Key.S);
-    } else if (currentEle === "Victory") {
-      key_output.innerText = "A";
-      currentKey = await keyboard.pressKey(Key.A);
-    } else if (currentEle === "Open_Palm") {
-      key_output.innerText = "D";
-      currentKey = await keyboard.pressKey(Key.D);
-    } else if (currentEle === "Closed_Fist") {
-      key_output.innerText = "space";
-      currentKey = await keyboard.pressKey(Key.Space);
+    // siistitty versio ----------------
+    const gestureObject = {
+      Thumb_Up: { key: Key.W, label: "W" },
+      Thumb_Down: { key: Key.S, label: "S" },
+      Victory: { key: Key.A, label: "A" },
+      Open_Palm: { key: Key.D, label: "D" },
+      Closed_Fist: { key: Key.Space, label: "space" },
+    };
+    const gestureKey = gestureObject[currentGesture];
+
+    if (gestureKey) {
+      currentKey = await keyboard.pressKey(gestureKey.key);
+      key_output.innerText = `Key: ${gestureKey.label}`;
     } else {
-      key_output.innerText = `Key: `;
-      await keyboard.releaseKey(Key.W);
-      await keyboard.releaseKey(Key.A);
-      await keyboard.releaseKey(Key.S);
-      await keyboard.releaseKey(Key.D);
-      await keyboard.releaseKey(Key.Space);
+      key_output.innerText = "Key: ";
+      Object.values(gestureObject).forEach(async ({ key }) => {
+        await keyboard.releaseKey(key);
+        currentKey = null;
+      });
     }
+    // ---------------------------------
+
+    // tunnistettu ele -> nut.js key press
+    // if (currentGesture === "Thumb_Up") {
+    //   key_output.innerText = "W";
+    //   currentKey = await keyboard.pressKey(Key.W);
+    // } else if (currentGesture === "Thumb_Down") {
+    //   key_output.innerText = "S";
+    //   currentKey = await keyboard.pressKey(Key.S);
+    // } else if (currentGesture === "Victory") {
+    //   key_output.innerText = "A";
+    //   currentKey = await keyboard.pressKey(Key.A);
+    // } else if (currentGesture === "Open_Palm") {
+    //   key_output.innerText = "D";
+    //   currentKey = await keyboard.pressKey(Key.D);
+    // } else if (currentGesture === "Closed_Fist") {
+    //   key_output.innerText = "space";
+    //   currentKey = await keyboard.pressKey(Key.Space);
+    // } else {
+    //   key_output.innerText = `Key: `;
+    //   await keyboard.releaseKey(Key.W);
+    //   await keyboard.releaseKey(Key.A);
+    //   await keyboard.releaseKey(Key.S);
+    //   await keyboard.releaseKey(Key.D);
+    //   await keyboard.releaseKey(Key.Space);
+    // }
   }
   canvasCtx.restore();
 
