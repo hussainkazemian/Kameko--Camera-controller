@@ -86,14 +86,14 @@ const createWindow = () => {
   );
 
   overlay.loadFile(path.join(dir, "overlay.html"));
-  // overlay.webContents.openDevTools();
+  overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screensaver");
   overlay.setVisibleOnAllWorkspaces(true, {
     visibleOnFullScreen: true,
   });
-  overlay.setIgnoreMouseEvents(true);
+  // overlay.setIgnoreMouseEvents(true);
   /*   overlay.on("blur", () => {
     overlay.focus();
   }); */ // DISABLED FOR TESTING REASONS

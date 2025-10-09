@@ -1,6 +1,7 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require("webpack");
 
 module.exports = [
   {
@@ -46,6 +47,9 @@ module.exports = [
       ],
     },
     plugins: [
+      new webpack.ProvidePlugin({
+        process: "process/browser",
+      }),
       new CopyWebpackPlugin({
         patterns: [
           { from: "node_modules/@mediapipe/tasks-vision/wasm", to: "wasm" },
@@ -55,6 +59,14 @@ module.exports = [
           {
             from: "models/hand_landmarker.task",
             to: "models/hand_landmarker.task",
+          },
+          {
+            from: "models/gesture_recognizer.task",
+            to: "models/gesture_recognizer.task",
+          },
+          {
+            from: "models/gestures.task",
+            to: "models/gestures.task",
           },
           // optional tray icon if provided by the project
           { from: "assets/icon.png", to: "icon.png", noErrorOnMissing: true },
@@ -69,7 +81,11 @@ module.exports = [
     ],
     resolve: {
       extensions: [".js"],
-      fallback: { fs: false, path: require.resolve("path-browserify") },
+      fallback: {
+        fs: false,
+        path: require.resolve("path-browserify"),
+        process: require.resolve("process/browser"),
+      },
     },
   },
 ];

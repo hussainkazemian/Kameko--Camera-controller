@@ -7,7 +7,10 @@ import {
   enumerateVideoInputs,
   /* stopStream, */
 } from "./media/camera";
-import { initHandLandmarker } from "./media/mediapipe";
+import {
+  /* initHandLandmarker, */ initGestureRecognizer,
+} from "./media/mediapipe";
+/* import { keyboard, Key } from "@nut-tree-fork/nut-js"; */
 
 // Entry bootstrapping of the renderer app.
 async function main() {
@@ -16,7 +19,6 @@ async function main() {
   const video = document.getElementById("video");
   const deviceContainer = document.getElementById("camera-select");
   const deviceSelect = document.getElementById("devices");
-
   if (!canvas || !video) {
     console.error("Canvas or video element not found in DOM");
     if (status) status.textContent = "Error: canvas/video element not found.";
@@ -75,21 +77,68 @@ async function main() {
     });
   }
 
-  async function detect(handLandmarker = undefined) {
-    if (!handLandmarker) {
+  async function detect(
+    /* handLandmarker = undefined, */
+    gestureRecognizer = undefined
+  ) {
+    if (/* !handLandmarker ||  */ !gestureRecognizer) {
       console.log("Loading hand model...");
-      handLandmarker = (await initHandLandmarker()).handLandmarker;
+      /* handLandmarker = (await initHandLandmarker()).handLandmarker; */
+      gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
     }
     try {
       const ts = performance.now();
-      const results = await handLandmarker.detectForVideo(video, ts);
+      /*       const results = await handLandmarker.detectForVideo(video, ts); */
+      const results = await gestureRecognizer.recognizeForVideo(video, ts);
+      if (results.gestures && results.gestures.length > 0) {
+        const gesture = results.gestures[0][0];
+        console.log(gesture.categoryName);
+      }
 
       draw(results, canvas, canvasCtx, drawingUtils);
       /* draw3D(results, scene); */
+
+      /*       '// Eleenn tunnistus
+      if (results.gestures && results.gestures.length > 0) {
+        const gesture = results.gestures[0][0];
+        console.log(`Tunnistettu ele: ${gesture.categoryName}`);
+        document.getElementById(
+          "gesture"
+        ).innerHTML = `<p>Ele: ${gesture.categoryName}</p>`;
+
+        const key_output = document.getElementById("key_output");
+
+        let currentGesture = gesture.categoryName;
+        let currentKey;
+
+        // siistitty versio ----------------
+        const gestureObject = {
+          Thumb_Up: { key: Key.W, label: "W" },
+          Thumb_Down: { key: Key.S, label: "S" },
+          Victory: { key: Key.A, label: "A" },
+          Open_Palm: { key: Key.D, label: "D" },
+          Closed_Fist: { key: Key.Space, label: "space" },
+        };
+        const gestureKey = gestureObject[currentGesture];
+
+        if (gestureKey) {
+          currentKey = await keyboard.pressKey(gestureKey.key);
+          key_output.innerText = `Key: ${gestureKey.label}`;
+        } else {
+          key_output.innerText = "Key: ";
+          Object.values(gestureObject).forEach(async ({ key }) => {
+            await keyboard.releaseKey(key);
+            currentKey = null;
+          });
+        }
+      }
+      // --------------------------------- */
     } catch (e) {
       console.error(e.message + "Detection error");
     }
-    requestAnimationFrame(() => detect(handLandmarker));
+    requestAnimationFrame(() =>
+      detect(/* handLandmarker, */ gestureRecognizer)
+    );
   }
 }
 
