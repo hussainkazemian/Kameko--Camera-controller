@@ -12,6 +12,12 @@ import {
 } from "./media/mediapipe";
 /* import { keyboard, Key } from "@nut-tree-fork/nut-js"; */
 
+// testi preload.js ja main.js kommunikaation
+if (window.appBridge) {
+  console.log("appBridge is available");
+  window.appBridge.etittavaFunkkis();
+}
+
 // Entry bootstrapping of the renderer app.
 async function main() {
   const status = document.getElementById("status");

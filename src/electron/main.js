@@ -62,6 +62,10 @@ const createWindow = () => {
       nodeIntegration: true, //  enables or disables Node.js APIs in the renderer process.
       contextIsolation: false,
     }, */
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true, // Isolates the context between main and renderer processes for security.
+    },
   });
 
   // Allow media permission via app-level confirmation (renderer will still prompt OS)
