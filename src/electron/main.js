@@ -119,14 +119,21 @@ const createWindow = () => {
     settingsWindow.hide();
   });
 };
+async function test() {
+  return "Main: Async testaus toimii";
+}
 
 app.whenReady().then(() => {
   // IPC MAIN PROCESS LISTENERS HERE
-  // test ipcMain.on ja ipcRenderer.send kommunikaatio
-  ipcMain.on("testi-channel", (event, msg) => {
+  // test ipcMain.on ja ipcRenderer.send kommunikaatio - yksisuuntainen
+  ipcMain.on("testi-channel", (_event, msg) => {
     console.log("Testi ipcMain, viesti renderetiltä:", msg);
   });
+  // ipcMain.handle ja Renderer.invoke asynkroninen kom. testi - kaksisuuntainen
+  ipcMain.handle("prefix:testaaAsyc", test);
+
   console.log("ipcMain listener for testi-channel registered");
+
   createWindow();
   createTray();
 

@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld("appBridge", {
     console.log("sendHelloFromRenderer called with msg:", msg);
     ipcRenderer.send("testi-channel", msg);
   },
+  testaaAsyc: () => ipcRenderer.invoke("prefix:testaaAsyc"),
+
   // test
   etittavaFunkkis: (msg) => {
     console.log("etittavaFunkkis called from renderer:", msg);

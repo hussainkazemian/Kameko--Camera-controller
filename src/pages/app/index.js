@@ -22,6 +22,11 @@ if (window.appBridge) {
 
 // Entry bootstrapping of the renderer app.
 async function main() {
+  // ipc async testi
+  const response = await window.appBridge.testaaAsyc();
+  console.log("Renderer: async response from main process:", response);
+
+  //
   const status = document.getElementById("status");
   const canvas = document.getElementById("canvas");
   const video = document.getElementById("video");
