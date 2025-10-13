@@ -7,6 +7,7 @@ const {
   /* nativeImage, */
   dialog,
   session,
+  ipcMain,
 } = require("electron");
 
 const path = require("path");
@@ -120,6 +121,12 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
+  // IPC MAIN PROCESS LISTENERS HERE
+  // test ipcMain.on ja ipcRenderer.send kommunikaatio
+  ipcMain.on("testi-channel", (event, msg) => {
+    console.log("Testi ipcMain, viesti renderetiltä:", msg);
+  });
+  console.log("ipcMain listener for testi-channel registered");
   createWindow();
   createTray();
 

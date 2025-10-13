@@ -15,7 +15,9 @@ import {
 // testi preload.js ja main.js kommunikaation
 if (window.appBridge) {
   console.log("appBridge is available");
-  window.appBridge.etittavaFunkkis();
+  window.appBridge.etittavaFunkkis("Hellou from renderer!");
+  // IPC testi
+  window.appBridge.sendHelloFromRenderer("Hello from renderer via IPC!");
 }
 
 // Entry bootstrapping of the renderer app.
