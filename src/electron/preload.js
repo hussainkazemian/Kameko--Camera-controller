@@ -15,4 +15,10 @@ contextBridge.exposeInMainWorld("appBridge", {
   etittavaFunkkis: (msg) => {
     console.log("etittavaFunkkis called from renderer:", msg);
   },
+
+  // gesturet
+  sendGesture: (gesture) => {
+    console.log("sendGesture called with gesture:", gesture);
+    ipcRenderer.send("gestures-channel", gesture);
+  },
 });

@@ -108,6 +108,14 @@ async function main() {
         console.log(gesture.categoryName);
       }
 
+      // send gestures to main process via IPC
+      if (results.gestures && results.gestures.length > 0) {
+        const gesture = results.gestures[0][0];
+        window.appBridge.sendGesture(gesture.categoryName);
+      }
+
+      // draw results
+
       draw(results, canvas, canvasCtx, drawingUtils);
       /* draw3D(results, scene); */
 

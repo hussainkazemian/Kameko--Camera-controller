@@ -132,6 +132,16 @@ app.whenReady().then(() => {
   // ipcMain.handle ja Renderer.invoke asynkroninen kom. testi - kaksisuuntainen
   ipcMain.handle("prefix:testaaAsyc", test);
 
+  /// get gestures from renderer
+  ipcMain.on("gestures-channel", (_event, gesture) => {
+    if (!gesture) {
+      console.log("No gesture received / detected");
+      return;
+    }
+    console.log("Received gesture from renderer:", gesture);
+    // Here you can add code to handle the received gesture
+  });
+
   console.log("ipcMain listener for testi-channel registered");
 
   createWindow();
