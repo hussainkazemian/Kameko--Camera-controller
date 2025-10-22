@@ -9,8 +9,15 @@ const {
   session,
   ipcMain,
 } = require("electron");
+import { keyboard, Key } from "@nut-tree-fork/nut-js";
 
 const path = require("path");
+
+// hides doc macOS
+const is_mac = process.platform === "darwin";
+if (is_mac) {
+  app.dock.hide();
+}
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
@@ -91,14 +98,14 @@ const createWindow = () => {
   );
 
   overlay.loadFile(path.join(dir, "overlay.html"));
-  overlay.webContents.openDevTools();
+  // overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screensaver");
   overlay.setVisibleOnAllWorkspaces(true, {
     visibleOnFullScreen: true,
   });
-  // overlay.setIgnoreMouseEvents(true);
+  overlay.setIgnoreMouseEvents(true);
   /*   overlay.on("blur", () => {
     overlay.focus();
   }); */ // DISABLED FOR TESTING REASONS
@@ -133,13 +140,42 @@ app.whenReady().then(() => {
   ipcMain.handle("prefix:testaaAsyc", test);
 
   /// get gestures from renderer
-  ipcMain.on("gestures-channel", (_event, gesture) => {
+  ipcMain.on("gestures-channel", async (_event, gesture) => {
     if (!gesture) {
       console.log("No gesture received / detected");
       return;
     }
     console.log("Received gesture from renderer:", gesture);
     // Here you can add code to handle the received gesture
+    //_______________________________________________________
+    // Eleenn tunnistus
+
+    // const key_output = document.getElementById("key_output");
+    let currentGesture = gesture;
+    // let currentKey;
+
+    // siistitty versio ----------------
+    const gestureObject = {
+      thumbfinger_down: { key: Key.W, label: "W" },
+      // Thumb_Down: { key: Key.S, label: "S" },
+      // Victory: { key: Key.A, label: "A" },
+      // Open_Palm: { key: Key.D, label: "D" },
+      // Closed_Fist: { key: Key.Space, label: "space" },
+    };
+    const gestureKey = gestureObject[currentGesture];
+
+    if (gestureKey) {
+      // currentKey =
+      await keyboard.pressKey(gestureKey.key);
+      //key_output.innerText = `Key: ${gestureKey.label}`;
+    } else {
+      // key_output.innerText = "Key: ";
+      Object.values(gestureObject).forEach(async ({ key }) => {
+        await keyboard.releaseKey(key);
+        // currentKey = null;
+      });
+    }
+    //_______________________________________________________
   });
 
   console.log("ipcMain listener for testi-channel registered");
