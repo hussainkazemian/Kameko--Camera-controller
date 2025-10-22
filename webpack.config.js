@@ -1,7 +1,7 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// const webpack = require("webpack");
+/* const webpack = require("webpack"); */
 
 module.exports = [
   {
@@ -50,9 +50,9 @@ module.exports = [
       ],
     },
     plugins: [
-      // new webpack.ProvidePlugin({
-      //   process: "process/browser",
-      // }),
+      /*       new webpack.ProvidePlugin({
+        process: "process/browser",
+      }), */
       new CopyWebpackPlugin({
         patterns: [
           { from: "node_modules/@mediapipe/tasks-vision/wasm", to: "wasm" },
@@ -87,7 +87,7 @@ module.exports = [
       fallback: {
         fs: false,
         path: require.resolve("path-browserify"),
-        // process: require.resolve("process/browser"),
+        /* process: require.resolve("process/browser"), */
       },
     },
   },
