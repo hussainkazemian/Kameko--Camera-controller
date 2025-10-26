@@ -13,6 +13,12 @@ import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
 
 const path = require("path");
 
+// hides doc macOS
+const is_mac = process.platform === "darwin";
+if (is_mac) {
+  app.dock.hide();
+}
+
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
 
@@ -92,7 +98,7 @@ const createWindow = () => {
   );
 
   overlay.loadFile(path.join(dir, "overlay.html"));
-  //overlay.webContents.openDevTools();
+  // overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screensaver");
