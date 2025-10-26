@@ -90,18 +90,13 @@ async function main() {
     });
   }
 
-  async function detect(
-    /* handLandmarker = undefined, */
-    gestureRecognizer = undefined
-  ) {
-    if (/* !handLandmarker ||  */ !gestureRecognizer) {
+  async function detect(gestureRecognizer = undefined) {
+    if (!gestureRecognizer) {
       console.log("Loading hand model...");
-      /* handLandmarker = (await initHandLandmarker()).handLandmarker; */
       gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
     }
     try {
       const ts = performance.now();
-      /*       const results = await handLandmarker.detectForVideo(video, ts); */
       const results = await gestureRecognizer.recognizeForVideo(video, ts);
       if (results.gestures && results.gestures.length > 0) {
         const gesture = results.gestures[0][0];
@@ -110,50 +105,12 @@ async function main() {
 
       // send gestures to main process via IPC
       if (results.gestures && results.gestures.length > 0) {
-        const gesture = results.gestures[0][0];
-        window.appBridge.sendGesture(gesture.categoryName);
+        window.appBridge.sendGesture(results);
       }
 
       // draw results
-
       draw(results, canvas, canvasCtx, drawingUtils);
       /* draw3D(results, scene); */
-
-      /*       '// Eleenn tunnistus
-      if (results.gestures && results.gestures.length > 0) {
-        const gesture = results.gestures[0][0];
-        console.log(`Tunnistettu ele: ${gesture.categoryName}`);
-        document.getElementById(
-          "gesture"
-        ).innerHTML = `<p>Ele: ${gesture.categoryName}</p>`;
-
-        const key_output = document.getElementById("key_output");
-
-        let currentGesture = gesture.categoryName;
-        let currentKey;
-
-        // siistitty versio ----------------
-        const gestureObject = {
-          Thumb_Up: { key: Key.W, label: "W" },
-          Thumb_Down: { key: Key.S, label: "S" },
-          Victory: { key: Key.A, label: "A" },
-          Open_Palm: { key: Key.D, label: "D" },
-          Closed_Fist: { key: Key.Space, label: "space" },
-        };
-        const gestureKey = gestureObject[currentGesture];
-
-        if (gestureKey) {
-          currentKey = await keyboard.pressKey(gestureKey.key);
-          key_output.innerText = `Key: ${gestureKey.label}`;
-        } else {
-          key_output.innerText = "Key: ";
-          Object.values(gestureObject).forEach(async ({ key }) => {
-            await keyboard.releaseKey(key);
-            currentKey = null;
-          });
-        }
-      }
-      // --------------------------------- */
     } catch (e) {
       console.error(e.message + "Detection error");
     }

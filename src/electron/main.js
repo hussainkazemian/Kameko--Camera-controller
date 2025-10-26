@@ -9,7 +9,7 @@ const {
   session,
   ipcMain,
 } = require("electron");
-import { keyboard, Key } from "@nut-tree-fork/nut-js";
+import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
 
 const path = require("path");
 
@@ -124,7 +124,13 @@ async function test() {
   return "Main: Async testaus toimii";
 }
 
+//########################################
+
+//########################################
+
 app.whenReady().then(() => {
+  let mousePosition = new Point();
+  const lastposition = new Point();
   // IPC MAIN PROCESS LISTENERS HERE
   // test ipcMain.on ja ipcRenderer.send kommunikaatio - yksisuuntainen
   ipcMain.on("testi-channel", (_event, msg) => {
@@ -134,12 +140,20 @@ app.whenReady().then(() => {
   ipcMain.handle("prefix:testaaAsyc", test);
 
   /// get gestures from renderer
-  ipcMain.on("gestures-channel", async (_event, gesture) => {
+  ipcMain.on("gestures-channel", async (_event, result) => {
+    const gesture = result.gestures[0][0].categoryName;
     if (!gesture) {
       console.log("No gesture received / detected");
       return;
     }
-    console.log("Received gesture from renderer:", gesture);
+    /*     console.log(
+      "Received gesture from renderer: " +
+        gesture +
+        " " +
+        result.handedness[0][0].categoryName,
+      result.handedness[1][0].categoryName
+    ); */
+
     // Here you can add code to handle the received gesture
     //_______________________________________________________
     // Eleenn tunnistus
@@ -154,7 +168,7 @@ app.whenReady().then(() => {
       Thumb_Down: { key: Key.S, label: "S" },
       Victory: { key: Key.A, label: "A" },
       Open_Palm: { key: Key.D, label: "D" },
-      Closed_Fist: { key: Key.Space, label: "space" },
+      //Closed_Fist: { key: Key.Space, label: "space" },
     };
     const gestureKey = gestureObject[currentGesture];
 
@@ -169,6 +183,32 @@ app.whenReady().then(() => {
         // currentKey = null;
       });
     }
+    //########################################
+    if (result?.landmarks) {
+      const wristX = result.landmarks[0][0].x;
+      const wristY = result.landmarks[0][0].y;
+      const pointX = 1920 - wristX * 1920;
+      const pointY = wristY * 1080;
+      // this did not work in game
+      /*       mousePosition.x = mousePosition.x - (lastposition.x - pointX);
+      mousePosition.y = mousePosition.y - (lastposition.y - pointY);
+      lastposition.x = pointX;
+      lastposition.y = pointY; */
+      mousePosition.x = pointX;
+      mousePosition.y = pointY;
+    }
+    if (gesture == "Closed_Fist") {
+      await mouse
+        .move(mousePosition)
+        .catch((error) => console.error("Mouse control error:", error));
+    } else {
+      mousePosition = await mouse.getPosition();
+      /*       console.log(mousePosition.x, mousePosition.y);
+      console.log(lastposition, position); */
+    }
+
+    //########################################
+
     //_______________________________________________________
   });
 
