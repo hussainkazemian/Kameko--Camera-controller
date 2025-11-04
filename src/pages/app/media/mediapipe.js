@@ -2,7 +2,17 @@ import { FilesetResolver, GestureRecognizer } from "@mediapipe/tasks-vision";
 
 // WITH CUSTOM GESTUREMODEL
 export async function initGestureRecognizer() {
-  const vision = await FilesetResolver.forVisionTasks("./wasm");
+  // Determine where the wasm assets are at runtime. In packaged apps Electron
+  // places extra resources under process.resourcesPath; we expose that path via
+  // the preload bridge as `appBridge.getResourcesPath()` so the renderer can
+  // find the emitted `dist/wasm` folder. Fall back to the local `./wasm` for
+  // development.
+  const resourcesPath =
+    window.appBridge && window.appBridge.getResourcesPath
+      ? window.appBridge.getResourcesPath()
+      : "";
+  const wasmBase = resourcesPath ? `${resourcesPath}/dist/wasm` : "./wasm";
+  const vision = await FilesetResolver.forVisionTasks(wasmBase);
   try {
     const gestureRecognizer = await GestureRecognizer.createFromOptions(
       vision,

@@ -21,4 +21,12 @@ contextBridge.exposeInMainWorld("appBridge", {
     console.log("sendGesture called with gesture:", gesture);
     ipcRenderer.send("gestures-channel", gesture);
   },
+  // Return the runtime resources path (useful in packaged apps)
+  getResourcesPath: () => {
+    try {
+      return process.resourcesPath || "";
+    } catch {
+      return "";
+    }
+  },
 });
