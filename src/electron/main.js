@@ -41,10 +41,13 @@ const createTray = () => {
     // last-resort fallback to original relative path
     iconPath = path.join(__dirname, "src", "images", "webcam.png");
   }
+  console.log("Tray icon path:", iconPath);
   const icon = nativeImage.createFromPath(iconPath);
-  if (process.platform === "darwin") icon.setTemplateImage(true);
+  // if (process.platform === "darwin") icon.setTemplateImage(true);
+
   //Creates the tray
   tray = new Tray(icon);
+  // Hover text
   tray.setToolTip("Camera Controller");
 
   const contextMenu = Menu.buildFromTemplate([
