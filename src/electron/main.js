@@ -152,16 +152,14 @@ async function test() {
   return "Main: Async testaus toimii";
 }
 
-//########################################
 
-//########################################
-
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createTray();
   createWindow();
 
-  let mousePosition = new Point();
-  const lastposition = new Point();
+  let mousePosition = await mouse.getPosition();
+  const monitor = screen.getPrimaryDisplay().workAreaSize;
+  let lastposition = new Point(0, 0);
   // IPC MAIN PROCESS LISTENERS HERE
   // test ipcMain.on ja ipcRenderer.send kommunikaatio - yksisuuntainen
   ipcMain.on("testi-channel", (_event, msg) => {
@@ -185,9 +183,8 @@ app.whenReady().then(() => {
       result.handedness[1][0].categoryName
     ); */
 
-    // Here you can add code to handle the received gesture
-    //_______________________________________________________
-    // Eleenn tunnistus
+    // ____________________
+    // Gesture regonison
 
     // const key_output = document.getElementById("key_output");
     let currentGesture = gesture;
@@ -197,16 +194,16 @@ app.whenReady().then(() => {
     const gestureObject = {
       Thumb_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
-      Victory: { key: Key.A, label: "A" },
-      Open_Palm: { key: Key.D, label: "D" },
-      //Closed_Fist: { key: Key.Space, label: "space" },
+      // Victory: { key: Key.A, label: "A" },
+      // Open_Palm: { key: Key.D, label: "D" },
+      // Closed_Fist: { key: Key.Space, label: "space" },
     };
     const gestureKey = gestureObject[currentGesture];
 
     if (gestureKey) {
       // currentKey =
       await keyboard.pressKey(gestureKey.key);
-      //key_output.innerText = `Key: ${gestureKey.label}`;
+      // key_output.innerText = `Key: ${gestureKey.label}`;
     } else {
       // key_output.innerText = "Key: ";
       Object.values(gestureObject).forEach(async ({ key }) => {
@@ -214,33 +211,29 @@ app.whenReady().then(() => {
         // currentKey = null;
       });
     }
-    //########################################
     if (result?.landmarks) {
       const wristX = result.landmarks[0][0].x;
       const wristY = result.landmarks[0][0].y;
-      const pointX = 1920 - wristX * 1920;
-      const pointY = wristY * 1080;
+      const pointX = monitor.width - wristX * monitor.width;
+      const pointY = wristY * monitor.height;
       // this did not work in game
-      /*       mousePosition.x = mousePosition.x - (lastposition.x - pointX);
+      mousePosition.x = mousePosition.x - (lastposition.x - pointX);
       mousePosition.y = mousePosition.y - (lastposition.y - pointY);
-      lastposition.x = pointX;
-      lastposition.y = pointY; */
-      mousePosition.x = pointX;
-      mousePosition.y = pointY;
+
+      /*       mousePosition.x = pointX;
+      mousePosition.y = pointY; */
     }
     if (gesture == "Closed_Fist") {
       await mouse
         .move(mousePosition)
         .catch((error) => console.error("Mouse control error:", error));
     } else {
-      mousePosition = await mouse.getPosition();
+      lastposition.x = mousePosition.x;
+      lastposition.y = mousePosition.y;
+      /* mousePosition = await mouse.getPosition(); */
       /*       console.log(mousePosition.x, mousePosition.y);
       console.log(lastposition, position); */
     }
-
-    //########################################
-
-    //_______________________________________________________
   });
 
   console.log("ipcMain listener for testi-channel registered");
