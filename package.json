@@ -30,6 +30,7 @@
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.17",
     "@nut-tree-fork/nut-js": "^4.2.6",
+    "electron-squirrel-startup": "^1.0.1",
     "mini-css-extract-plugin": "^2.9.4",
     "three": "^0.180.0"
   },
@@ -39,49 +40,15 @@
     "@electron-forge/maker-rpm": "^6.4.2",
     "@electron-forge/maker-squirrel": "^6.4.2",
     "@electron-forge/maker-zip": "^6.4.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
     "@eslint/js": "^9.36.0",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "electron": "^38.5.0",
     "eslint": "^9.36.0",
     "globals": "^16.4.0",
-    "path-browserify": "^1.0.1",
     "style-loader": "^4.0.0",
     "webpack": "^5.94.0",
     "webpack-cli": "^5.1.4"
-  },
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "extraResource": [
-          "dist/wasm",
-          "dist/models"
-        ],
-        "asarUnpack": [
-          "**/*.wasm",
-          "models/**"
-        ]
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
   }
 }

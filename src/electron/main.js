@@ -11,6 +11,9 @@ const {
 } = require("electron");
 import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
 
+if (require("electron-squirrel-startup")) {
+  app.quit();
+}
 const path = require("path");
 const fs = require("fs");
 
@@ -151,7 +154,6 @@ const createWindow = () => {
 async function test() {
   return "Main: Async testaus toimii";
 }
-
 
 app.whenReady().then(async () => {
   createTray();

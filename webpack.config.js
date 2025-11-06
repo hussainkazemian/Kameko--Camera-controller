@@ -76,7 +76,7 @@ module.exports = [
           { from: "assets/icon.ico", to: "icon.ico", noErrorOnMissing: true },
           { from: "assets/icon.icns", to: "icon.icns", noErrorOnMissing: true },
           // copy images folder if present (for tray/window icons like webcam2.png)
-          { from: "images", to: "images", noErrorOnMissing: true },
+          { from: "src/images", to: "images", noErrorOnMissing: true },
         ],
       }),
       new MiniCssExtractPlugin({ filename: "overlay.css" }),
@@ -86,8 +86,6 @@ module.exports = [
       extensions: [".js"],
       fallback: {
         fs: false,
-        path: require.resolve("path-browserify"),
-        /* process: require.resolve("process/browser"), */
       },
     },
   },
