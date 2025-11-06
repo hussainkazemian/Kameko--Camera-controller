@@ -1,12 +1,12 @@
 import { GestureRecognizer } from "@mediapipe/tasks-vision";
 /* import { HAND_CONNECTIONS } from "./handConnections"; */
-const video = document.getElementById("video");
+/* const video = document.getElementById("video"); */
 
 async function draw(results, canvas, canvasCtx, drawingUtils) {
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  canvas.width = window.screen.width;
+  canvas.height = window.screen.height;
   if (results.landmarks) {
     for (const landmarks of results.landmarks) {
       drawingUtils.drawConnectors(

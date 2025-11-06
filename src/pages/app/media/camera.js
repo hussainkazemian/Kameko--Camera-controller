@@ -11,7 +11,12 @@ export function stopStream(target) {
 export async function requestStream(videoEl, deviceId, callback) {
   // deviceId optional: if provided, request exactly that device; else prompt default
   const constraints = {
-    video: deviceId ? { deviceId: { exact: deviceId } } : true,
+    video: {
+      deviceId: { exact: deviceId },
+      width: 320,
+      height: 180,
+      resizeMode: "crop-and-scale",
+    },
     audio: false,
   };
   try {

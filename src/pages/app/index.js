@@ -114,9 +114,7 @@ async function main() {
     } catch (e) {
       console.error(e.message + "Detection error");
     }
-    requestAnimationFrame(() =>
-      detect(/* handLandmarker, */ gestureRecognizer)
-    );
+    requestAnimationFrame(() => detect(gestureRecognizer));
   }
 }
 
