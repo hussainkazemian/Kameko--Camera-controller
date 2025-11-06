@@ -4,7 +4,7 @@ const {
   screen,
   Tray,
   Menu,
-  /* nativeImage, */
+  nativeImage,
   dialog,
   session,
   ipcMain,
@@ -12,12 +12,13 @@ const {
 import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
 
 const path = require("path");
+const fs = require("fs");
 
 // hides doc macOS
-const is_mac = process.platform === "darwin";
-if (is_mac) {
-  app.dock.hide();
-}
+// const is_mac = process.platform === "darwin";
+// if (is_mac) {
+//   app.dock.hide();
+// }
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
@@ -26,7 +27,27 @@ const dir = __dirname;
 
 // Creates tray on windows desktop corner
 const createTray = () => {
-  tray = new Tray("./images/webcam2.png");
+  // Resolve tray icon path that works in development and packaged app.
+  const candidates = [
+    // compiled output next to bundled files
+    path.join(__dirname, "images", "webcam.png"),
+    // webpack emitted assets in dist
+    path.join(__dirname, "..", "dist", "images", "webcam.png"),
+    // packaged app resources
+    path.join(process.resourcesPath || "", "dist", "images", "webcam.png"),
+  ];
+  let iconPath = candidates.find((p) => p && fs.existsSync(p));
+  if (!iconPath) {
+    // last-resort fallback to original relative path
+    iconPath = path.join(__dirname, "src", "images", "webcam.png");
+  }
+  console.log("Tray icon path:", iconPath);
+  const icon = nativeImage.createFromPath(iconPath);
+  // if (process.platform === "darwin") icon.setTemplateImage(true);
+
+  //Creates the tray
+  tray = new Tray(icon);
+  // Hover text
   tray.setToolTip("Camera Controller");
 
   const contextMenu = Menu.buildFromTemplate([
@@ -126,11 +147,16 @@ const createWindow = () => {
     settingsWindow.hide();
   });
 };
+
 async function test() {
   return "Main: Async testaus toimii";
 }
 
+
 app.whenReady().then(async () => {
+  createTray();
+  createWindow();
+
   let mousePosition = await mouse.getPosition();
   const monitor = screen.getPrimaryDisplay().workAreaSize;
   let lastposition = new Point(0, 0);
@@ -212,8 +238,8 @@ app.whenReady().then(async () => {
 
   console.log("ipcMain listener for testi-channel registered");
 
-  createWindow();
-  createTray();
+  // createWindow();
+  // createTray();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
