@@ -4,7 +4,7 @@ const {
   screen,
   Tray,
   Menu,
-  nativeImage,
+  // nativeImage,
   dialog,
   session,
   ipcMain,
@@ -15,13 +15,12 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 const path = require("path");
-const fs = require("fs");
 
 // hides doc macOS
-// const is_mac = process.platform === "darwin";
-// if (is_mac) {
-//   app.dock.hide();
-// }
+const is_mac = process.platform === "darwin";
+if (is_mac) {
+  app.dock.hide();
+}
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
@@ -88,10 +87,6 @@ const createWindow = () => {
     resizable: false,
     hasShadow: false,
     skipTaskbar: true,
-    /*     webPreferences: {
-      nodeIntegration: true, //  enables or disables Node.js APIs in the renderer process.
-      contextIsolation: false,
-    }, */
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true, // Isolates the context between main and renderer processes for security.
@@ -123,7 +118,7 @@ const createWindow = () => {
   // overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
-  overlay.setAlwaysOnTop(true, "screensaver");
+  overlay.setAlwaysOnTop(true, "screen-saver");
   overlay.setVisibleOnAllWorkspaces(true, {
     visibleOnFullScreen: true,
   });
@@ -237,9 +232,6 @@ app.whenReady().then(async () => {
   });
 
   console.log("ipcMain listener for testi-channel registered");
-
-  // createWindow();
-  // createTray();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
