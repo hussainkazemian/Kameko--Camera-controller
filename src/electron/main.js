@@ -30,26 +30,24 @@ const dir = __dirname;
 
 // Creates tray on windows desktop corner
 const createTray = () => {
-  // Resolve tray icon path that works in development and packaged app.
-  const candidates = [
-    // compiled output next to bundled files
-    path.join(__dirname, "images", "webcam.png"),
-    // webpack emitted assets in dist
-    path.join(__dirname, "..", "dist", "images", "webcam.png"),
-    // packaged app resources
-    path.join(process.resourcesPath || "", "dist", "images", "webcam.png"),
-  ];
-  let iconPath = candidates.find((p) => p && fs.existsSync(p));
-  if (!iconPath) {
-    // last-resort fallback to original relative path
-    iconPath = path.join(__dirname, "src", "images", "webcam.png");
+  // console.log("Tray icon path:", iconPath);
+  // console.log("App resources path:", process.resourcesPath);
+  let trayIcon;
+  if (app.isPackaged) {
+    // production
+    trayIcon = path.join(
+      process.resourcesPath,
+      "app.asar",
+      "dist",
+      "images",
+      "webcam.png"
+    );
+  } else {
+    // development
+    trayIcon = path.join(__dirname, "images", "webcam.png");
   }
-  console.log("Tray icon path:", iconPath);
-  const icon = nativeImage.createFromPath(iconPath);
-  // if (process.platform === "darwin") icon.setTemplateImage(true);
-
   //Creates the tray
-  tray = new Tray(icon);
+  tray = new Tray(trayIcon);
   // Hover text
   tray.setToolTip("Camera Controller");
 
