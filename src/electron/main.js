@@ -187,11 +187,11 @@ app.whenReady().then(async () => {
 
     // siistitty versio ----------------
     const gestureObject = {
-      Thumb_Up: { key: Key.W, label: "W" },
-      Thumb_Down: { key: Key.S, label: "S" },
-      // Victory: { key: Key.A, label: "A" },
-      // Open_Palm: { key: Key.D, label: "D" },
-      // Closed_Fist: { key: Key.Space, label: "space" },
+      w: { key: Key.W, label: "W" },
+      s: { key: Key.S, label: "S" },
+      a: { key: Key.A, label: "A" },
+      d: { key: Key.D, label: "D" },
+      space: { key: Key.Space, label: "space" },
     };
     const gestureKey = gestureObject[currentGesture];
 
@@ -218,7 +218,7 @@ app.whenReady().then(async () => {
       /*       mousePosition.x = pointX;
       mousePosition.y = pointY; */
     }
-    if (gesture == "Closed_Fist") {
+    if (gesture == "mouse_idle") {
       await mouse
         .move(mousePosition)
         .catch((error) => console.error("Mouse control error:", error));

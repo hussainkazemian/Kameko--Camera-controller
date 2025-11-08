@@ -71,6 +71,7 @@ module.exports = [
             from: "models/gestures.task",
             to: "models/gestures.task",
           },
+          { from: "models/simplesample.task", to: "models/simplesample.task" },
           // optional tray icon if provided by the project
           { from: "assets/icon.png", to: "icon.png", noErrorOnMissing: true },
           { from: "assets/icon.ico", to: "icon.ico", noErrorOnMissing: true },
