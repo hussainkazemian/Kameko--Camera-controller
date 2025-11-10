@@ -115,7 +115,7 @@ const createWindow = () => {
   );
 
   overlay.loadFile(path.join(dir, "overlay.html"));
-  // overlay.webContents.openDevTools();
+  overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screen-saver");
@@ -170,14 +170,25 @@ app.whenReady().then(async () => {
       console.log("No gesture received / detected");
       return;
     }
-    /*     console.log(
-      "Received gesture from renderer: " +
-        gesture +
-        " " +
-        result.handedness[0][0].categoryName,
-      result.handedness[1][0].categoryName
-    ); */
+    const hand = result.handedness[0][0];
+    console.log("handu:", hand.categoryName);
 
+    let suunta = null;
+
+    for (const landmarks of result.landmarks) {
+      const wrist = landmarks[0].x;
+      const sormi = landmarks[8].x;
+
+      if (sormi < wrist) {
+        // console.log("oikea");
+        suunta = "oikea";
+        console.log(suunta);
+      } else {
+        // console.log("vasen");
+        suunta = "vasen";
+        console.log(suunta);
+      }
+    }
     // ____________________
     // Gesture regonison
 
@@ -187,17 +198,23 @@ app.whenReady().then(async () => {
 
     // siistitty versio ----------------
     const gestureObject = {
-      w: { key: Key.W, label: "W" },
-      s: { key: Key.S, label: "S" },
-      a: { key: Key.A, label: "A" },
-      d: { key: Key.D, label: "D" },
-      space: { key: Key.Space, label: "space" },
+      Left: { key: Key.A, label: "A" },
+      Right: { key: Key.D, label: "D" },
     };
     const gestureKey = gestureObject[currentGesture];
 
     if (gestureKey) {
       // currentKey =
-      await keyboard.pressKey(gestureKey.key);
+      if (hand.index === 1 && currentGesture === "Left" && suunta === "vasen") {
+        await keyboard.pressKey(gestureKey.key);
+      }
+      if (
+        hand.index === 0 &&
+        currentGesture === "Right" &&
+        suunta === "oikea"
+      ) {
+        await keyboard.pressKey(gestureKey.key);
+      }
       // key_output.innerText = `Key: ${gestureKey.label}`;
     } else {
       // key_output.innerText = "Key: ";
