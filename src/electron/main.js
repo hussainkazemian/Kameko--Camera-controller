@@ -190,7 +190,7 @@ app.whenReady().then(async () => {
       }
     }
     // ____________________
-    // Gesture regonison
+    // Gesture recognition
 
     // const key_output = document.getElementById("key_output");
     let currentGesture = gesture;
@@ -198,23 +198,25 @@ app.whenReady().then(async () => {
 
     // siistitty versio ----------------
     const gestureObject = {
-      Left: { key: Key.A, label: "A" },
-      Right: { key: Key.D, label: "D" },
+      // Left: { key: Key.A, label: "A" },
+      // Right: { key: Key.D, label: "D" },
+      Palm: { key: null, label: "Palm" },
+      w: { key: Key.W, label: "W" },
+      s: { key: Key.S, label: "S" },
     };
     const gestureKey = gestureObject[currentGesture];
 
     if (gestureKey) {
       // currentKey =
-      if (hand.index === 1 && currentGesture === "Left" && suunta === "vasen") {
+      if (hand.index === 1 && currentGesture === "Palm" && suunta === "vasen") {
+        gestureKey.key = Key.A;
         await keyboard.pressKey(gestureKey.key);
       }
-      if (
-        hand.index === 0 &&
-        currentGesture === "Right" &&
-        suunta === "oikea"
-      ) {
+      if (hand.index === 0 && currentGesture === "Palm" && suunta === "oikea") {
+        gestureKey.key = Key.D;
         await keyboard.pressKey(gestureKey.key);
       }
+      await keyboard.pressKey(gestureKey.key);
       // key_output.innerText = `Key: ${gestureKey.label}`;
     } else {
       // key_output.innerText = "Key: ";

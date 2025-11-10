@@ -73,6 +73,9 @@ module.exports = [
           },
           { from: "models/simplesample.task", to: "models/simplesample.task" },
           { from: "models/palm.task", to: "models/palm.task" },
+          { from: "models/g.task", to: "models/g.task" },
+          { from: "models/gest.task", to: "models/gest.task" },
+
           // optional tray icon if provided by the project
           { from: "assets/icon.png", to: "icon.png", noErrorOnMissing: true },
           { from: "assets/icon.ico", to: "icon.ico", noErrorOnMissing: true },

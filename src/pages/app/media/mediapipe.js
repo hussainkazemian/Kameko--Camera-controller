@@ -19,7 +19,7 @@ export async function initGestureRecognizer() {
       {
         baseOptions: {
           // modelAssetPath: "models/gesture_recognizer.task",
-          modelAssetPath: "models/palm.task",
+          modelAssetPath: "models/gest.task",
           delegate: "GPU",
         },
         runningMode: "LIVE_STREAM", // IMAGE tai VIDEO
@@ -34,7 +34,7 @@ export async function initGestureRecognizer() {
       {
         baseOptions: {
           //modelAssetPath: "models/gesture_recognizer.task",
-          modelAssetPath: "models/palm.task",
+          modelAssetPath: "models/gest.task",
           delegate: "CPU",
         },
         runningMode: "LIVE_STREAM",
