@@ -115,7 +115,7 @@ const createWindow = () => {
   );
 
   overlay.loadFile(path.join(dir, "overlay.html"));
-  overlay.webContents.openDevTools();
+  // overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screen-saver");
@@ -194,28 +194,28 @@ app.whenReady().then(async () => {
 
     // const key_output = document.getElementById("key_output");
     let currentGesture = gesture;
+    console.log("Current gesture:", currentGesture);
     // let currentKey;
 
     // siistitty versio ----------------
     const gestureObject = {
       // Left: { key: Key.A, label: "A" },
       // Right: { key: Key.D, label: "D" },
-      Palm: { key: null, label: "Palm" },
+      Palm: { key: null, label: "A / D" },
       w: { key: Key.W, label: "W" },
       s: { key: Key.S, label: "S" },
     };
     const gestureKey = gestureObject[currentGesture];
 
+    if (hand.index === 1 && currentGesture === "Palm" && suunta === "vasen") {
+      gestureKey.key = Key.A;
+    }
+    if (hand.index === 0 && currentGesture === "Palm" && suunta === "oikea") {
+      gestureKey.key = Key.D;
+    }
+    // KEY PRESSING
     if (gestureKey) {
       // currentKey =
-      if (hand.index === 1 && currentGesture === "Palm" && suunta === "vasen") {
-        gestureKey.key = Key.A;
-        await keyboard.pressKey(gestureKey.key);
-      }
-      if (hand.index === 0 && currentGesture === "Palm" && suunta === "oikea") {
-        gestureKey.key = Key.D;
-        await keyboard.pressKey(gestureKey.key);
-      }
       await keyboard.pressKey(gestureKey.key);
       // key_output.innerText = `Key: ${gestureKey.label}`;
     } else {
@@ -225,6 +225,8 @@ app.whenReady().then(async () => {
         // currentKey = null;
       });
     }
+
+    // MOUSE MOVEMENT
     if (result?.landmarks) {
       const wristX = result.landmarks[0][0].x;
       const wristY = result.landmarks[0][0].y;
