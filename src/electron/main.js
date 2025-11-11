@@ -168,8 +168,10 @@ app.whenReady().then(async () => {
     const gesture = result.gestures[0][0].categoryName;
     if (!gesture) {
       console.log("No gesture received / detected");
+
       return;
     }
+    // Handedness
     const hand = result.handedness[0][0];
     console.log("handu:", hand.categoryName);
 
@@ -180,13 +182,11 @@ app.whenReady().then(async () => {
       const sormi = landmarks[8].x;
 
       if (sormi < wrist) {
-        // console.log("oikea");
         suunta = "oikea";
-        console.log(suunta);
+        // console.log(suunta);
       } else {
-        // console.log("vasen");
         suunta = "vasen";
-        console.log(suunta);
+        // console.log(suunta);
       }
     }
     // ____________________
@@ -201,28 +201,33 @@ app.whenReady().then(async () => {
     const gestureObject = {
       // Left: { key: Key.A, label: "A" },
       // Right: { key: Key.D, label: "D" },
-      Palm: { key: null, label: "A / D" },
-      w: { key: Key.W, label: "W" },
-      s: { key: Key.S, label: "S" },
+      Thumb_Up: { key: Key.W, label: "W" },
+      Victory: { key: Key.A, label: "A" },
+      Open_Palm: { key: Key.D, label: "D" },
+      Closed_Fist: { key: Key.S, label: "S" },
     };
     const gestureKey = gestureObject[currentGesture];
 
-    if (hand.index === 1 && currentGesture === "Palm" && suunta === "vasen") {
-      gestureKey.key = Key.A;
-    }
-    if (hand.index === 0 && currentGesture === "Palm" && suunta === "oikea") {
-      gestureKey.key = Key.D;
-    }
     // KEY PRESSING
+
     if (gestureKey) {
-      // currentKey =
+      // if (currentGesture === "Open_Palm") {
+      //   if (hand.index === 1 && suunta === "vasen") {
+      //     gestureKey.key = Key.A;
+      //   } else if (hand.index === 0 && suunta === "oikea") {
+      //     gestureKey.key = Key.D;
+      //   }
+      // }
+
+      // PAINA NAPPIA
       await keyboard.pressKey(gestureKey.key);
       // key_output.innerText = `Key: ${gestureKey.label}`;
     } else {
+      console.log("No gesture detected");
       // key_output.innerText = "Key: ";
-      Object.values(gestureObject).forEach(async ({ key }) => {
-        await keyboard.releaseKey(key);
-        // currentKey = null;
+      Object.values(gestureObject).forEach(({ key }) => {
+        keyboard.releaseKey(key);
+        console.log("Released key:", key);
       });
     }
 
@@ -239,7 +244,7 @@ app.whenReady().then(async () => {
       /*       mousePosition.x = pointX;
       mousePosition.y = pointY; */
     }
-    if (gesture == "mouse_idle") {
+    if (gesture == "Pointing_Up") {
       await mouse
         .move(mousePosition)
         .catch((error) => console.error("Mouse control error:", error));
