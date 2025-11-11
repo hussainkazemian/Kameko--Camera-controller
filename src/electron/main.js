@@ -17,10 +17,10 @@ if (require("electron-squirrel-startup")) {
 const path = require("path");
 
 // hides doc macOS
-const is_mac = process.platform === "darwin";
-if (is_mac) {
-  app.dock.hide();
-}
+// const is_mac = process.platform === "darwin";
+// if (is_mac) {
+//   app.dock.hide();
+// }
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
@@ -138,8 +138,8 @@ const createWindow = () => {
 
   settingsWindow.loadFile(path.join(dir, "settings.html"));
   //closing windows now wont delete the windows but hide it
-  settingsWindow.on("close", (e) => {
-    e.preventDefault(); // Prevents quit
+  settingsWindow.on("close", () => {
+    // e.preventDefault(); // Prevents quit <--- ! prevent app closing completely, dont use
     settingsWindow.hide();
   });
 };
@@ -183,10 +183,10 @@ app.whenReady().then(async () => {
 
       if (sormi < wrist) {
         suunta = "oikea";
-        // console.log(suunta);
+        console.log(suunta);
       } else {
         suunta = "vasen";
-        // console.log(suunta);
+        console.log(suunta);
       }
     }
     // ____________________
@@ -268,4 +268,10 @@ app.whenReady().then(async () => {
   app.on("before-quit", function () {
     tray.destroy();
   });
+
+  // app.on("window-all-closed", () => {
+  //   // if (process.platform !== "darwin") {
+  //   app.quit();
+  //   // }
+  // });
 });
