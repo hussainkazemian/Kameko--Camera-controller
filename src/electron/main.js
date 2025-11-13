@@ -10,20 +10,17 @@ const {
   ipcMain,
 } = require("electron");
 import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
+import { overlay } from "three/tsl";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
 const path = require("path");
 
-// hides doc macOS
-// const is_mac = process.platform === "darwin";
-// if (is_mac) {
-//   app.dock.hide();
-// }
-
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
+let settingsWindow = null;
+let isQuitting = false;
 
 const dir = __dirname;
 
@@ -93,6 +90,37 @@ const createWindow = () => {
     },
   });
 
+  overlay.loadFile(path.join(dir, "overlay.html"));
+  // overlay.webContents.openDevTools();
+  //Makes it so user can click an interract through window.
+
+  overlay.setAlwaysOnTop(true, "screen-saver");
+  overlay.setVisibleOnAllWorkspaces(true, {
+    visibleOnFullScreen: true,
+  });
+  overlay.setIgnoreMouseEvents(true);
+  /*   overlay.on("blur", () => {
+    overlay.focus();
+  }); */ // DISABLED FOR TESTING REASONS
+
+  let settingsWindow = new BrowserWindow({
+    width,
+    height,
+    resizable: true,
+    frame: true,
+    title: "Settings",
+    icon: "./images/webcam_large2.png",
+  });
+
+  settingsWindow.loadFile(path.join(dir, "settings.html"));
+  //closing windows now wont delete the windows but hide it
+  settingsWindow.on("close", (e) => {
+    if (!isQuitting) {
+      e.preventDefault(); // Prevents quit <--- ! prevent app closing completely, dont use
+      settingsWindow.hide();
+    }
+  });
+
   // Allow media permission via app-level confirmation (renderer will still prompt OS)
   session.defaultSession.setPermissionRequestHandler(
     (webContents, permission, callback) => {
@@ -113,35 +141,6 @@ const createWindow = () => {
       }
     }
   );
-
-  overlay.loadFile(path.join(dir, "overlay.html"));
-  // overlay.webContents.openDevTools();
-  //Makes it so user can click an interract through window.
-
-  overlay.setAlwaysOnTop(true, "screen-saver");
-  overlay.setVisibleOnAllWorkspaces(true, {
-    visibleOnFullScreen: true,
-  });
-  overlay.setIgnoreMouseEvents(true);
-  /*   overlay.on("blur", () => {
-    overlay.focus();
-  }); */ // DISABLED FOR TESTING REASONS
-
-  const settingsWindow = new BrowserWindow({
-    width,
-    height,
-    resizable: true,
-    frame: true,
-    title: "Settings",
-    icon: "./images/webcam_large2.png",
-  });
-
-  settingsWindow.loadFile(path.join(dir, "settings.html"));
-  //closing windows now wont delete the windows but hide it
-  settingsWindow.on("close", () => {
-    // e.preventDefault(); // Prevents quit <--- ! prevent app closing completely, dont use
-    settingsWindow.hide();
-  });
 };
 
 async function test() {
@@ -179,67 +178,34 @@ app.whenReady().then(async () => {
     const hand = result.handedness[0][0];
     console.log("handu:", hand.categoryName);
 
-    let suunta = null;
-
-    for (const landmarks of result.landmarks) {
-      const wrist = landmarks[0].x;
-      const sormi = landmarks[8].x;
-
-      if (sormi < wrist) {
-        suunta = "oikea";
-        console.log(suunta);
-      } else {
-        suunta = "vasen";
-        console.log(suunta);
-      }
-    }
     // ____________________
     // Gesture recognition
 
-    // const key_output = document.getElementById("key_output");
     let currentGesture = gesture;
     console.log("Current gesture:", currentGesture);
-    // let currentKey;
-
-    // TEST FOR DIAS
-    // if (currentGesture && currentGesture === "Thumb_Up") {
-    //   await keyboard.pressKey(Key.W);
-    //   await keyboard.releaseKey(Key.W);
-    // }
 
     // siistitty versio ----------------
-    // const gestureObject = {
-    //   // Left: { key: Key.A, label: "A" },
-    //   // Right: { key: Key.D, label: "D" },
-    //   Thumb_Up: { key: Key.W, label: "W" },
-    //   Victory: { key: Key.A, label: "A" },
-    //   Open_Palm: { key: Key.D, label: "D" },
-    //   Thumb_Down: { key: Key.S, label: "S" },
-    // };
-    // const gestureKey = gestureObject[currentGesture];
+    const gestureObject = {
+      Thumb_Up: { key: Key.W, label: "W" },
+      Victory: { key: Key.A, label: "A" },
+      Thumb_Down: { key: Key.S, label: "S" },
+      Open_Palm: { key: Key.D, label: "D" },
+      Closed_Fist: { key: Key.E, label: "E" },
+    };
+    const gestureKey = gestureObject[currentGesture];
 
     // // KEY PRESSING
 
-    // if (gestureKey) {
-    //   // if (currentGesture === "Open_Palm") {
-    //   //   if (hand.index === 1 && suunta === "vasen") {
-    //   //     gestureKey.key = Key.A;
-    //   //   } else if (hand.index === 0 && suunta === "oikea") {
-    //   //     gestureKey.key = Key.D;
-    //   //   }
-    //   // }
-
-    //   // PAINA NAPPIA
-    //   await keyboard.pressKey(gestureKey.key);
-    //   // key_output.innerText = `Key: ${gestureKey.label}`;
-    // } else {
-    //   console.log("No gesture detected");
-    //   // key_output.innerText = "Key: ";
-    //   Object.values(gestureObject).forEach(({ key }) => {
-    //     keyboard.releaseKey(key);
-    //     console.log("Released key:", key);
-    //   });
-    // }
+    if (gestureKey) {
+      //   // PAINA NAPPIA
+      await keyboard.pressKey(gestureKey.key);
+    } else {
+      console.log("No gesture detected");
+      Object.values(gestureObject).forEach(({ key }) => {
+        keyboard.releaseKey(key);
+        console.log("Released key:", key);
+      });
+    }
 
     // MOUSE MOVEMENT
     if (result?.landmarks) {
@@ -248,8 +214,8 @@ app.whenReady().then(async () => {
       const pointX = monitor.width - wristX * monitor.width;
       const pointY = wristY * monitor.height;
       // this did not work in game
-      mousePosition.x = mousePosition.x - (lastposition.x - pointX);
-      mousePosition.y = mousePosition.y - (lastposition.y - pointY);
+      mousePosition.x = mousePosition.x - (lastposition.x - pointX) * 0.05;
+      mousePosition.y = mousePosition.y - (lastposition.y - pointY) * 0.05;
 
       /*       mousePosition.x = pointX;
       mousePosition.y = pointY; */
@@ -269,11 +235,10 @@ app.whenReady().then(async () => {
     }
     // MOUSE CLICK GESTURE  test for dia show :) -> click after 2s
 
-    if (gesture === "Open_Palm" && lastGesture !== "Open_Palm") {
+    if (gesture === "Closed_Fist" && lastGesture !== "Closed_Fist") {
       setTimeout(async () => {
         await mouse.leftClick();
-        console.log("Mouse clicked for Open_Palm");
-      }, 3500);
+      }, 2000);
       // lastGesture = "Open_Palm";
     }
     lastGesture = gesture;
@@ -281,19 +246,20 @@ app.whenReady().then(async () => {
 
   console.log("ipcMain listener for testi-channel registered");
 
+  app.on("ready", createWindow);
+
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+    // if (BrowserWindow.getAllWindows().length === 0) {
+    //   createWindow();
+    // }
+    if (settingsWindow && settingsWindow.isMinimized()) {
+      settingsWindow.show();
     }
+    overlay.show();
   });
 
   app.on("before-quit", function () {
+    isQuitting = true;
     tray.destroy();
   });
-
-  // app.on("window-all-closed", () => {
-  //   // if (process.platform !== "darwin") {
-  //   app.quit();
-  //   // }
-  // });
 });
