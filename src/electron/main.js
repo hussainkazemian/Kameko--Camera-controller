@@ -155,6 +155,10 @@ app.whenReady().then(async () => {
   let mousePosition = await mouse.getPosition();
   const monitor = screen.getPrimaryDisplay().workAreaSize;
   let lastposition = new Point(0, 0);
+
+  // check last gesture
+  let lastGesture = null;
+
   // IPC MAIN PROCESS LISTENERS HERE
   // test ipcMain.on ja ipcRenderer.send kommunikaatio - yksisuuntainen
   ipcMain.on("testi-channel", (_event, msg) => {
@@ -197,39 +201,45 @@ app.whenReady().then(async () => {
     console.log("Current gesture:", currentGesture);
     // let currentKey;
 
+    // TEST FOR DIAS
+    // if (currentGesture && currentGesture === "Thumb_Up") {
+    //   await keyboard.pressKey(Key.W);
+    //   await keyboard.releaseKey(Key.W);
+    // }
+
     // siistitty versio ----------------
-    const gestureObject = {
-      // Left: { key: Key.A, label: "A" },
-      // Right: { key: Key.D, label: "D" },
-      Thumb_Up: { key: Key.W, label: "W" },
-      Victory: { key: Key.A, label: "A" },
-      Open_Palm: { key: Key.D, label: "D" },
-      Closed_Fist: { key: Key.S, label: "S" },
-    };
-    const gestureKey = gestureObject[currentGesture];
+    // const gestureObject = {
+    //   // Left: { key: Key.A, label: "A" },
+    //   // Right: { key: Key.D, label: "D" },
+    //   Thumb_Up: { key: Key.W, label: "W" },
+    //   Victory: { key: Key.A, label: "A" },
+    //   Open_Palm: { key: Key.D, label: "D" },
+    //   Thumb_Down: { key: Key.S, label: "S" },
+    // };
+    // const gestureKey = gestureObject[currentGesture];
 
-    // KEY PRESSING
+    // // KEY PRESSING
 
-    if (gestureKey) {
-      // if (currentGesture === "Open_Palm") {
-      //   if (hand.index === 1 && suunta === "vasen") {
-      //     gestureKey.key = Key.A;
-      //   } else if (hand.index === 0 && suunta === "oikea") {
-      //     gestureKey.key = Key.D;
-      //   }
-      // }
+    // if (gestureKey) {
+    //   // if (currentGesture === "Open_Palm") {
+    //   //   if (hand.index === 1 && suunta === "vasen") {
+    //   //     gestureKey.key = Key.A;
+    //   //   } else if (hand.index === 0 && suunta === "oikea") {
+    //   //     gestureKey.key = Key.D;
+    //   //   }
+    //   // }
 
-      // PAINA NAPPIA
-      await keyboard.pressKey(gestureKey.key);
-      // key_output.innerText = `Key: ${gestureKey.label}`;
-    } else {
-      console.log("No gesture detected");
-      // key_output.innerText = "Key: ";
-      Object.values(gestureObject).forEach(({ key }) => {
-        keyboard.releaseKey(key);
-        console.log("Released key:", key);
-      });
-    }
+    //   // PAINA NAPPIA
+    //   await keyboard.pressKey(gestureKey.key);
+    //   // key_output.innerText = `Key: ${gestureKey.label}`;
+    // } else {
+    //   console.log("No gesture detected");
+    //   // key_output.innerText = "Key: ";
+    //   Object.values(gestureObject).forEach(({ key }) => {
+    //     keyboard.releaseKey(key);
+    //     console.log("Released key:", key);
+    //   });
+    // }
 
     // MOUSE MOVEMENT
     if (result?.landmarks) {
@@ -244,6 +254,8 @@ app.whenReady().then(async () => {
       /*       mousePosition.x = pointX;
       mousePosition.y = pointY; */
     }
+
+    // MOUSE MOVEMENT GESTURE
     if (gesture == "Pointing_Up") {
       await mouse
         .move(mousePosition)
@@ -255,6 +267,16 @@ app.whenReady().then(async () => {
       /*       console.log(mousePosition.x, mousePosition.y);
       console.log(lastposition, position); */
     }
+    // MOUSE CLICK GESTURE  test for dia show :) -> click after 2s
+
+    if (gesture === "Open_Palm" && lastGesture !== "Open_Palm") {
+      setTimeout(async () => {
+        await mouse.leftClick();
+        console.log("Mouse clicked for Open_Palm");
+      }, 3500);
+      // lastGesture = "Open_Palm";
+    }
+    lastGesture = gesture;
   });
 
   console.log("ipcMain listener for testi-channel registered");
