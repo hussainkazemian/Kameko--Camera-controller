@@ -8,8 +8,7 @@ const {
   session,
   ipcMain,
 } = require("electron");
-import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
-import { overlay } from "three/tsl";
+import { mouse, Point, keyboard, Key, Button } from "@nut-tree-fork/nut-js";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -141,36 +140,53 @@ const createWindow = () => {
   );
 };
 
-app.whenReady().then(async () => {
+app.whenReady().then(() => {
   createTray();
   createWindow();
 
-  let mousePosition = await mouse.getPosition();
   const monitor = screen.getPrimaryDisplay().workAreaSize;
-  let lastposition = new Point(0, 0);
+  let mousePosition = new Point(monitor.width / 2, monitor.height / 2);
+  let lastposition = new Point(monitor.width / 2, monitor.height / 2);
+  let holding = false;
 
   // check last gesture
-  let lastGesture = null;
+  // let lastGesture = null;
+  let lastRightGesture;
+  let lastLeftGesture;
 
   // IPC MAIN PROCESS LISTENERS HERE
 
   /// get gestures from renderer
-  ipcMain.on("gestures-channel", async (_event, result) => {
+  ipcMain.on("gestures-channel", (_event, result) => {
     const gesture = result.gestures[0][0].categoryName;
     if (!gesture) {
-      console.log("No gesture received / detected");
+      //console.log("No gesture received / detected");
 
       return;
     }
     // Handedness
-    const hand = result.handedness[0][0];
+    //const hand = result.handedness[0][0];
     // console.log("handu:", hand.categoryName);
 
     // ____________________
     // Gesture recognition
+    let handRight;
+    let handLeft;
+    let rightGesture;
+    let leftGesture;
+    for (let i in result.handedness) {
+      if (result.handedness[i][0].categoryName === "Right") {
+        handRight = result.landmarks[i];
+        rightGesture = result.gestures[i][0].categoryName;
+      } else {
+        handLeft = result.landmarks[i];
+        leftGesture = result.gestures[i][0].categoryName;
+      }
+    }
+    // console.log(leftGesture, rightGesture);
 
-    let currentGesture = gesture;
-    console.log("Current gesture:", currentGesture);
+    // let currentGesture = gesture;
+    //console.log("Current gesture:", currentGesture);
 
     // MEDIAPIPE GESTURES:
     /*
@@ -185,63 +201,86 @@ app.whenReady().then(async () => {
     */
 
     // Gesture Object with gesturenames and corresponding keys ----------------
-    const gestureObject = {
-      Thumb_Up: { key: Key.W, label: "W" },
-      Victory: { key: Key.A, label: "A" },
-      Thumb_Down: { key: Key.S, label: "S" },
-      Open_Palm: { key: Key.D, label: "D" },
-      Closed_Fist: { key: Key.E, label: "E" },
+    const rightGestureObject = {
+      Thumb_Up: { key: Key.W, label: "R_W" },
+      Thumb_Down: { key: Key.S, label: "R_S" },
+      Victory: { key: Key.D, label: "D" },
     };
-    const gestureKey = gestureObject[currentGesture];
 
-    // // KEY PRESSING
+    const leftGestureObject = {
+      Thumb_Up: { key: Key.W, label: "L_W" },
+      Thumb_Down: { key: Key.S, label: "L_S" },
+      Victory: { key: Key.A, label: "A" },
+    };
 
-    if (gestureKey) {
-      await keyboard.pressKey(gestureKey.key);
+    const rightGestureKey = rightGestureObject[rightGesture];
+    const leftGestureKey = leftGestureObject[leftGesture];
+
+    // KEY PRESSING
+
+    if (rightGestureKey) {
+      keyboard.pressKey(rightGestureKey.key);
+      //keybordKey(rightGestureKey);
     } else {
-      console.log("No gesture detected");
-      Object.values(gestureObject).forEach(({ key }) => {
+      //console.log("No gesture detected");
+      Object.values(rightGestureObject).forEach(({ key }) => {
         keyboard.releaseKey(key);
       });
     }
 
-    // MOUSE MOVEMENT
-    //mouse.config.mouseSpeed = 30; // set mouse speed
-    if (result?.landmarks) {
-      const wristX = result.landmarks[0][0].x;
-      const wristY = result.landmarks[0][0].y;
+    if (leftGestureKey) {
+      keyboard.pressKey(leftGestureKey.key);
+      //keybordKey(leftGestureKey);
+    } else {
+      //console.log("No gesture detected");
+      Object.values(leftGestureObject).forEach(({ key }) => {
+        keyboard.releaseKey(key);
+      });
+    }
+    if (handRight) {
+      // MOUSE MOVEMENT
+      //mouse.config.mouseSpeed = 30; // set mouse speed
+      // this did not work in game
+      const wristX = handRight[0].x;
+      const wristY = handRight[0].y;
       const pointX = monitor.width - wristX * monitor.width;
       const pointY = wristY * monitor.height;
-      // this did not work in game
-      mousePosition.x = mousePosition.x - (lastposition.x - pointX) * 0.05;
-      mousePosition.y = mousePosition.y - (lastposition.y - pointY) * 0.05;
 
-      /*       mousePosition.x = pointX;
-      mousePosition.y = pointY; */
+      // MOUSE MOVEMENT GESTURE
+      if (rightGesture == "Closed_Fist") {
+        mousePosition.x = mousePosition.x - (lastposition.x - pointX);
+        mousePosition.y = mousePosition.y - (lastposition.y - pointY);
+        lastposition.x = pointX;
+        lastposition.y = pointY;
+        mouse
+          .move(mousePosition)
+          .catch((error) => console.error("Mouse control error:", error));
+        // moveMouse(mousePosition);
+      } else {
+        lastposition.x = pointX;
+        lastposition.y = pointY;
+      }
+      // mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
+    }
+    if (rightGesture === "Pointing_Up" && lastRightGesture !== "Pointing_Up") {
+      console.log("debug");
+      // mouseKey(holding);
+      if (!holding) {
+        mouse.pressButton(Button.LEFT);
+      } else {
+        mouse.releaseButton(Button.LEFT);
+      }
+      holding = !holding;
+    }
+    if (leftGesture === "Closed_Fist" && lastLeftGesture !== "Closed_Fist") {
+      keyboard.pressKey(Key.E);
+      keyboard.releaseKey(Key.E);
+
+      //keybordKey({ key: Key.E, label: "E" });
     }
 
-    // MOUSE MOVEMENT GESTURE
-    if (gesture == "Pointing_Up") {
-      await mouse
-        .move(mousePosition)
-        .catch((error) => console.error("Mouse control error:", error));
-    } else {
-      lastposition.x = mousePosition.x;
-      lastposition.y = mousePosition.y;
-      /* mousePosition = await mouse.getPosition(); */
-      /*       console.log(mousePosition.x, mousePosition.y);
-      console.log(lastposition, position); */
-    }
-    mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
-
-    if (gesture === "Closed_Fist" && lastGesture !== "Closed_Fist") {
-      setTimeout(async () => {
-        await mouse.leftClick();
-      }, 2000);
-      // lastGesture = "Open_Palm";
-    }
-
-    lastGesture = gesture;
+    lastRightGesture = rightGesture;
+    lastLeftGesture = leftGesture;
   });
 
   // ELECTRON APP EVENTS
@@ -252,7 +291,7 @@ app.whenReady().then(async () => {
     if (settingsWindow && settingsWindow.isMinimized()) {
       settingsWindow.show();
     }
-    overlay.show();
+    //overlay.show();
   });
 
   app.on("before-quit", function () {
@@ -260,3 +299,23 @@ app.whenReady().then(async () => {
     tray.destroy();
   });
 });
+
+/* // FUNCTIONS FOR NUT.JS
+async function keybordKey(gestureKey) {
+  await keyboard.pressKey(gestureKey.key);
+}
+
+async function moveMouse(mousePosition) {
+  await mouse
+    .move(mousePosition)
+    .catch((error) => console.error("Mouse control error:", error));
+}
+
+async function mouseKey(holding) {
+  if (!holding) {
+    await mouse.pressButton(Button.LEFT);
+  } else {
+    await mouse.releaseButton(Button.LEFT);
+  }
+}
+ */
