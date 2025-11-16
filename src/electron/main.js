@@ -4,7 +4,6 @@ const {
   screen,
   Tray,
   Menu,
-  // nativeImage,
   dialog,
   session,
   ipcMain,
@@ -26,11 +25,9 @@ const dir = __dirname;
 
 // Creates tray on windows desktop corner
 const createTray = () => {
-  // console.log("Tray icon path:", iconPath);
-  // console.log("App resources path:", process.resourcesPath);
   let trayIcon;
   if (app.isPackaged) {
-    // production
+    // production path to icon
     trayIcon = path.join(
       process.resourcesPath,
       "app.asar",
@@ -39,9 +36,10 @@ const createTray = () => {
       "webcam.png"
     );
   } else {
-    // development
+    // development path to icon
     trayIcon = path.join(__dirname, "images", "webcam.png");
   }
+
   //Creates the tray
   tray = new Tray(trayIcon);
   // Hover text
@@ -116,7 +114,7 @@ const createWindow = () => {
   //closing windows now wont delete the windows but hide it
   settingsWindow.on("close", (e) => {
     if (!isQuitting) {
-      e.preventDefault(); // Prevents quit <--- ! prevent app closing completely, dont use
+      e.preventDefault();
       settingsWindow.hide();
     }
   });
@@ -143,10 +141,6 @@ const createWindow = () => {
   );
 };
 
-async function test() {
-  return "Main: Async testaus toimii";
-}
-
 app.whenReady().then(async () => {
   createTray();
   createWindow();
@@ -159,12 +153,6 @@ app.whenReady().then(async () => {
   let lastGesture = null;
 
   // IPC MAIN PROCESS LISTENERS HERE
-  // test ipcMain.on ja ipcRenderer.send kommunikaatio - yksisuuntainen
-  ipcMain.on("testi-channel", (_event, msg) => {
-    console.log("Testi ipcMain, viesti renderetiltä:", msg);
-  });
-  // ipcMain.handle ja Renderer.invoke asynkroninen kom. testi - kaksisuuntainen
-  ipcMain.handle("prefix:testaaAsyc", test);
 
   /// get gestures from renderer
   ipcMain.on("gestures-channel", async (_event, result) => {
@@ -176,7 +164,7 @@ app.whenReady().then(async () => {
     }
     // Handedness
     const hand = result.handedness[0][0];
-    console.log("handu:", hand.categoryName);
+    // console.log("handu:", hand.categoryName);
 
     // ____________________
     // Gesture recognition
@@ -184,7 +172,19 @@ app.whenReady().then(async () => {
     let currentGesture = gesture;
     console.log("Current gesture:", currentGesture);
 
-    // siistitty versio ----------------
+    // MEDIAPIPE GESTURES:
+    /*
+      Closed_Fist 
+      Open_Palm 
+      Pointing_Up 
+      Thumb_Down 
+      Thumb_Up 
+      Victory
+      ILoveYou🤘
+      None
+    */
+
+    // Gesture Object with gesturenames and corresponding keys ----------------
     const gestureObject = {
       Thumb_Up: { key: Key.W, label: "W" },
       Victory: { key: Key.A, label: "A" },
@@ -197,13 +197,11 @@ app.whenReady().then(async () => {
     // // KEY PRESSING
 
     if (gestureKey) {
-      //   // PAINA NAPPIA
       await keyboard.pressKey(gestureKey.key);
     } else {
       console.log("No gesture detected");
       Object.values(gestureObject).forEach(({ key }) => {
         keyboard.releaseKey(key);
-        console.log("Released key:", key);
       });
     }
 
@@ -233,7 +231,6 @@ app.whenReady().then(async () => {
       /*       console.log(mousePosition.x, mousePosition.y);
       console.log(lastposition, position); */
     }
-    // MOUSE CLICK GESTURE  test for dia show :) -> click after 2s
 
     if (gesture === "Closed_Fist" && lastGesture !== "Closed_Fist") {
       setTimeout(async () => {
@@ -241,17 +238,15 @@ app.whenReady().then(async () => {
       }, 2000);
       // lastGesture = "Open_Palm";
     }
+
     lastGesture = gesture;
   });
 
-  console.log("ipcMain listener for testi-channel registered");
+  // ELECTRON APP EVENTS
 
   app.on("ready", createWindow);
 
   app.on("activate", () => {
-    // if (BrowserWindow.getAllWindows().length === 0) {
-    //   createWindow();
-    // }
     if (settingsWindow && settingsWindow.isMinimized()) {
       settingsWindow.show();
     }

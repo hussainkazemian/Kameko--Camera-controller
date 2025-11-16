@@ -1,32 +1,12 @@
 import "../overlay.css";
-/* import { HandScene, draw3D } from "./canvas/canvas3D"; */
 import { draw } from "./canvas/canvas2D";
 import { DrawingUtils } from "@mediapipe/tasks-vision";
-import {
-  requestStream,
-  enumerateVideoInputs,
-  /* stopStream, */
-} from "./media/camera";
-import {
-  /* initHandLandmarker, */ initGestureRecognizer,
-} from "./media/mediapipe";
-/* import { keyboard, Key } from "@nut-tree-fork/nut-js"; */
-
-// testi preload.js ja main.js kommunikaation
-if (window.appBridge) {
-  console.log("appBridge is available");
-  window.appBridge.etittavaFunkkis("Hellou from renderer!");
-  // IPC testi
-  window.appBridge.sendHelloFromRenderer("Hello from renderer via IPC!");
-}
+import { requestStream, enumerateVideoInputs } from "./media/camera";
+import { initGestureRecognizer } from "./media/mediapipe";
 
 // Entry bootstrapping of the renderer app.
 async function main() {
-  // ipc async testi
-  const response = await window.appBridge.testaaAsyc();
-  console.log("Renderer: async response from main process:", response);
-
-  //
+  // DOM elements
   const status = document.getElementById("status");
   const canvas = document.getElementById("canvas");
   const video = document.getElementById("video");
@@ -38,10 +18,6 @@ async function main() {
     return;
   }
 
-  //////////////////
-  // for 3D canvas
-  /*   const scene = new HandScene(canvas); */
-  //////
   // for 2D canvas
   const canvasCtx = canvas.getContext("2d");
   canvas.width = 1280; // canvas resolution
@@ -101,16 +77,12 @@ async function main() {
       if (results.gestures && results.gestures.length > 0) {
         const gesture = results.gestures[0][0];
         console.log(gesture.categoryName);
-      }
-
-      // send gestures to main process via IPC
-      if (results.gestures && results.gestures.length > 0) {
+        // send gestures to main process via IPC
         window.appBridge.sendGesture(results);
       }
 
       // draw results
       draw(results, canvas, canvasCtx, drawingUtils);
-      /* draw3D(results, scene); */
     } catch (e) {
       console.error(e.message + "Detection error");
     }

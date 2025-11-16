@@ -7,6 +7,7 @@ export async function initGestureRecognizer() {
   // the preload bridge as `appBridge.getResourcesPath()` so the renderer can
   // find the emitted `dist/wasm` folder. Fall back to the local `./wasm` for
   // development.
+
   const resourcesPath =
     window.appBridge && window.appBridge.getResourcesPath
       ? window.appBridge.getResourcesPath()
@@ -19,11 +20,11 @@ export async function initGestureRecognizer() {
       {
         baseOptions: {
           modelAssetPath: "models/gesture_recognizer.task",
-          // modelAssetPath: "models/gest.task",
+
           delegate: "GPU",
         },
-        runningMode: "LIVE_STREAM", // IMAGE tai VIDEO
-        numHands: 2, // käsien lkm
+        runningMode: "LIVE_STREAM",
+        numHands: 2,
       }
     );
     return { gestureRecognizer };
@@ -34,7 +35,6 @@ export async function initGestureRecognizer() {
       {
         baseOptions: {
           modelAssetPath: "models/gesture_recognizer.task",
-          // modelAssetPath: "models/gest.task",
           delegate: "CPU",
         },
         runningMode: "LIVE_STREAM",

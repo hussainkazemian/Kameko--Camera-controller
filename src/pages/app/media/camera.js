@@ -24,7 +24,6 @@ export async function requestStream(videoEl, deviceId, callback) {
     if (videoEl) {
       stopStream(videoEl); // ensure previous is closed
       videoEl.srcObject = stream;
-      console.log("something");
       /* await videoEl.play(); */ //<-- not needed
       videoEl.addEventListener("loadeddata", (event) => {
         // checks if video element is ready

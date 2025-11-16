@@ -59,10 +59,7 @@ module.exports = [
           // copy renderer html and models
           { from: "src/pages/overlay.html", to: "overlay.html" },
           { from: "src/pages/settings.html", to: "settings.html" },
-          {
-            from: "models/hand_landmarker.task",
-            to: "models/hand_landmarker.task",
-          },
+
           {
             from: "models/gesture_recognizer.task",
             to: "models/gesture_recognizer.task",
