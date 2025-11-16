@@ -9,6 +9,7 @@ const {
   ipcMain,
 } = require("electron");
 import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
+import { overlay } from "three/tsl";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -146,8 +147,7 @@ app.whenReady().then(async () => {
 
   let mousePosition = await mouse.getPosition();
   const monitor = screen.getPrimaryDisplay().workAreaSize;
-  // let lastposition = new Point(0, 0);
-  let lastposition = new Point(mousePosition.x, mousePosition.y);
+  let lastposition = new Point(0, 0);
 
   // check last gesture
   let lastGesture = null;
@@ -206,16 +206,15 @@ app.whenReady().then(async () => {
     }
 
     // MOUSE MOVEMENT
-    mouse.config.mouseSpeed = 20; // set mouse speed(1-100)
-
+    //mouse.config.mouseSpeed = 30; // set mouse speed
     if (result?.landmarks) {
       const wristX = result.landmarks[0][0].x;
       const wristY = result.landmarks[0][0].y;
       const pointX = monitor.width - wristX * monitor.width;
       const pointY = wristY * monitor.height;
       // this did not work in game
-      mousePosition.x = mousePosition.x - (lastposition.x - pointX);
-      mousePosition.y = mousePosition.y - (lastposition.y - pointY);
+      mousePosition.x = mousePosition.x - (lastposition.x - pointX) * 0.05;
+      mousePosition.y = mousePosition.y - (lastposition.y - pointY) * 0.05;
 
       /*       mousePosition.x = pointX;
       mousePosition.y = pointY; */
@@ -233,13 +232,13 @@ app.whenReady().then(async () => {
       /*       console.log(mousePosition.x, mousePosition.y);
       console.log(lastposition, position); */
     }
-    // update last position
-    mousePosition = lastposition;
+    mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
 
     if (gesture === "Closed_Fist" && lastGesture !== "Closed_Fist") {
       setTimeout(async () => {
         await mouse.leftClick();
       }, 2000);
+      // lastGesture = "Open_Palm";
     }
 
     lastGesture = gesture;
