@@ -64,13 +64,7 @@ module.exports = [
             from: "models/gesture_recognizer.task",
             to: "models/gesture_recognizer.task",
           },
-          {
-            from: "models/gestures.task",
-            to: "models/gestures.task",
-          },
-          { from: "models/simplesample.task", to: "models/simplesample.task" },
-          { from: "models/palm.task", to: "models/palm.task" },
-          { from: "models/g.task", to: "models/g.task" },
+
           { from: "models/gest.task", to: "models/gest.task" },
 
           // optional tray icon if provided by the project
