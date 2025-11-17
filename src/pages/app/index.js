@@ -20,8 +20,6 @@ async function main() {
 
   // for 2D canvas
   const canvasCtx = canvas.getContext("2d");
-  canvas.width = 1280; // canvas resolution
-  canvas.height = 720;
   const drawingUtils = new DrawingUtils(canvasCtx);
   canvas.style.transform = "rotateY(180deg)"; // mirror 2D canvas
   ////////////////////
@@ -72,11 +70,9 @@ async function main() {
       gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
     }
     try {
-      const ts = performance.now();
+      const ts = performance.now() - 50; // added a 50 millisecond delay to prevent Failuer to reserve output capture buffer
       const results = await gestureRecognizer.recognizeForVideo(video, ts);
       if (results.gestures && results.gestures.length > 0) {
-        const gesture = results.gestures[0][0];
-        console.log(gesture.categoryName);
         // send gestures to main process via IPC
         window.appBridge.sendGesture(results);
       }

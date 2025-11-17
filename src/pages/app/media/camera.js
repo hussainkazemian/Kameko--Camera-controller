@@ -13,8 +13,8 @@ export async function requestStream(videoEl, deviceId, callback) {
   const constraints = {
     video: {
       deviceId: { exact: deviceId },
-      width: 320,
-      height: 180,
+      width: 640,
+      height: 360,
       resizeMode: "crop-and-scale",
     },
     audio: false,

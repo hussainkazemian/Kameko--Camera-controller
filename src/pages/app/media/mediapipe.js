@@ -23,7 +23,7 @@ export async function initGestureRecognizer() {
 
           delegate: "GPU",
         },
-        runningMode: "LIVE_STREAM",
+        runningMode: "VIDEO",
         numHands: 2,
       }
     );
@@ -37,7 +37,7 @@ export async function initGestureRecognizer() {
           modelAssetPath: "models/gesture_recognizer.task",
           delegate: "CPU",
         },
-        runningMode: "LIVE_STREAM",
+        runningMode: "VIDEO",
         numHands: 2,
       }
     );

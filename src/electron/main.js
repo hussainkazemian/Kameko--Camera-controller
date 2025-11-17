@@ -147,7 +147,7 @@ app.whenReady().then(() => {
   const monitor = screen.getPrimaryDisplay().workAreaSize;
   let mousePosition = new Point(monitor.width / 2, monitor.height / 2);
   let lastposition = new Point(monitor.width / 2, monitor.height / 2);
-  let holding = false;
+  //let holding = false;
 
   // check last gesture
   // let lastGesture = null;
@@ -202,26 +202,28 @@ app.whenReady().then(() => {
 
     // Gesture Object with gesturenames and corresponding keys ----------------
     const rightGestureObject = {
-      Thumb_Up: { key: Key.W, label: "R_W" },
-      Thumb_Down: { key: Key.S, label: "R_S" },
+      Thumb_Up: { key: Key.W, label: "W" },
+      Thumb_Down: { key: Key.S, label: "S" },
       Victory: { key: Key.D, label: "D" },
     };
 
     const leftGestureObject = {
-      Thumb_Up: { key: Key.W, label: "L_W" },
-      Thumb_Down: { key: Key.S, label: "L_S" },
+      Thumb_Up: { key: Key.W, label: "W" },
+      Thumb_Down: { key: Key.S, label: "S" },
       Victory: { key: Key.A, label: "A" },
     };
 
     const rightGestureKey = rightGestureObject[rightGesture];
     const leftGestureKey = leftGestureObject[leftGesture];
+    const crossReference =
+      rightGestureObject[leftGesture] ?? leftGestureObject[rightGesture];
 
     // KEY PRESSING
 
     if (rightGestureKey) {
       keyboard.pressKey(rightGestureKey.key);
       //keybordKey(rightGestureKey);
-    } else {
+    } else if (!crossReference) {
       //console.log("No gesture detected");
       Object.values(rightGestureObject).forEach(({ key }) => {
         keyboard.releaseKey(key);
@@ -230,13 +232,22 @@ app.whenReady().then(() => {
 
     if (leftGestureKey) {
       keyboard.pressKey(leftGestureKey.key);
-      //keybordKey(leftGestureKey);
-    } else {
+    } else if (!crossReference) {
       //console.log("No gesture detected");
       Object.values(leftGestureObject).forEach(({ key }) => {
         keyboard.releaseKey(key);
       });
     }
+
+    if (!rightGestureKey && !leftGestureKey) {
+      Object.values(leftGestureObject).forEach(({ key }) => {
+        keyboard.releaseKey(key);
+      });
+      Object.values(rightGestureObject).forEach(({ key }) => {
+        keyboard.releaseKey(key);
+      });
+    }
+
     if (handRight) {
       // MOUSE MOVEMENT
       //mouse.config.mouseSpeed = 30; // set mouse speed
@@ -247,7 +258,7 @@ app.whenReady().then(() => {
       const pointY = wristY * monitor.height;
 
       // MOUSE MOVEMENT GESTURE
-      if (rightGesture == "Closed_Fist") {
+      if (rightGesture == "Closed_Fist" || rightGesture === "Pointing_Up") {
         mousePosition.x = mousePosition.x - (lastposition.x - pointX);
         mousePosition.y = mousePosition.y - (lastposition.y - pointY);
         lastposition.x = pointX;
@@ -255,7 +266,6 @@ app.whenReady().then(() => {
         mouse
           .move(mousePosition)
           .catch((error) => console.error("Mouse control error:", error));
-        // moveMouse(mousePosition);
       } else {
         lastposition.x = pointX;
         lastposition.y = pointY;
@@ -263,20 +273,15 @@ app.whenReady().then(() => {
       // mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
     }
     if (rightGesture === "Pointing_Up" && lastRightGesture !== "Pointing_Up") {
-      console.log("debug");
-      // mouseKey(holding);
-      if (!holding) {
-        mouse.pressButton(Button.LEFT);
-      } else {
-        mouse.releaseButton(Button.LEFT);
-      }
-      holding = !holding;
+      mouse.pressButton(Button.LEFT);
+
+      //holding = true;
+    } else if (rightGesture !== "Pointing_Up") {
+      mouse.releaseButton(Button.LEFT);
     }
     if (leftGesture === "Closed_Fist" && lastLeftGesture !== "Closed_Fist") {
       keyboard.pressKey(Key.E);
       keyboard.releaseKey(Key.E);
-
-      //keybordKey({ key: Key.E, label: "E" });
     }
 
     lastRightGesture = rightGesture;
@@ -299,23 +304,3 @@ app.whenReady().then(() => {
     tray.destroy();
   });
 });
-
-/* // FUNCTIONS FOR NUT.JS
-async function keybordKey(gestureKey) {
-  await keyboard.pressKey(gestureKey.key);
-}
-
-async function moveMouse(mousePosition) {
-  await mouse
-    .move(mousePosition)
-    .catch((error) => console.error("Mouse control error:", error));
-}
-
-async function mouseKey(holding) {
-  if (!holding) {
-    await mouse.pressButton(Button.LEFT);
-  } else {
-    await mouse.releaseButton(Button.LEFT);
-  }
-}
- */
