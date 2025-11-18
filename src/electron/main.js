@@ -9,7 +9,6 @@ const {
   ipcMain,
 } = require("electron");
 import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
-import { overlay } from "three/tsl";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -20,6 +19,10 @@ const path = require("path");
 let tray = null;
 let settingsWindow = null;
 let isQuitting = false;
+
+//
+let indexX;
+let indexY;
 
 const dir = __dirname;
 
@@ -159,9 +162,14 @@ app.whenReady().then(async () => {
     const gesture = result.gestures[0][0].categoryName;
     if (!gesture) {
       console.log("No gesture received / detected");
-
       return;
     }
+    // indexfingingertip coords
+    const indexFingerTip = result.landmarks[0][8];
+    indexX = monitor.width - indexFingerTip.x * monitor.width;
+    indexY = indexFingerTip.y * monitor.height;
+    console.log(indexX, indexY);
+
     // Handedness
     const hand = result.handedness[0][0];
     // console.log("handu:", hand.categoryName);
@@ -219,20 +227,19 @@ app.whenReady().then(async () => {
       /*       mousePosition.x = pointX;
       mousePosition.y = pointY; */
     }
-
-    // MOUSE MOVEMENT GESTURE
-    if (gesture == "Pointing_Up") {
-      await mouse
-        .move(mousePosition)
-        .catch((error) => console.error("Mouse control error:", error));
-    } else {
-      lastposition.x = mousePosition.x;
-      lastposition.y = mousePosition.y;
-      /* mousePosition = await mouse.getPosition(); */
-      /*       console.log(mousePosition.x, mousePosition.y);
-      console.log(lastposition, position); */
-    }
-    mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
+    // // MOUSE MOVEMENT GESTURE
+    // if (gesture == "Pointing_Up") {
+    //   await mouse
+    //     .move(mousePosition)
+    //     .catch((error) => console.error("Mouse control error:", error));
+    // } else {
+    //   lastposition.x = mousePosition.x;
+    //   lastposition.y = mousePosition.y;
+    //   /* mousePosition = await mouse.getPosition(); */
+    //   /*       console.log(mousePosition.x, mousePosition.y);
+    //   console.log(lastposition, position); */
+    // }
+    // mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
 
     if (gesture === "Closed_Fist" && lastGesture !== "Closed_Fist") {
       setTimeout(async () => {
@@ -244,9 +251,18 @@ app.whenReady().then(async () => {
     lastGesture = gesture;
   });
 
-  // ELECTRON APP EVENTS
+  // get infoBox position from renderer
+  ipcMain.on("infobox-channel", (_event, { rectX, rectY }) => {
+    console.log("InfoBox received in main process:", { rectX, rectY });
+    console.log(rectX, rectY);
 
-  app.on("ready", createWindow);
+    // fingertip x y comparison to infobox position
+    if (indexX == rectX) {
+      console.log("hit");
+    }
+  });
+
+  // ELECTRON APP EVENTS
 
   app.on("activate", () => {
     if (settingsWindow && settingsWindow.isMinimized()) {

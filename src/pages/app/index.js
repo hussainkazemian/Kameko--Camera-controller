@@ -12,6 +12,16 @@ async function main() {
   const video = document.getElementById("video");
   const deviceContainer = document.getElementById("camera-select");
   const deviceSelect = document.getElementById("devices");
+
+  const infoBox = document.getElementById("info");
+  infoBox.style.backgroundColor = "blue";
+  const rect = infoBox.getBoundingClientRect();
+  const rectX = rect.x;
+  const rectY = rect.y;
+  console.log(`InfoBox position - X: ${rectX}, Y: ${rectY}`);
+  // send box element trough ipc
+  window.appBridge.sendInfoBox(rectX, rectY);
+
   if (!canvas || !video) {
     console.error("Canvas or video element not found in DOM");
     if (status) status.textContent = "Error: canvas/video element not found.";
