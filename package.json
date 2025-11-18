@@ -1,5 +1,5 @@
 {
-  "name": "digital-twin-project",
+  "name": "kameko",
   "version": "1.0.0",
   "description": "A digital twin project for hand tracking using MediaPipe and Electron",
   "main": "dist/main.js",
