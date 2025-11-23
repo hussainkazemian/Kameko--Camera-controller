@@ -70,11 +70,11 @@ async function main() {
       gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
     }
     try {
-      const ts = performance.now() - 50; // added a 50 millisecond delay to prevent Failuer to reserve output capture buffer
+      const ts = performance.now(); // added a 50 millisecond delay to prevent Failuer to reserve output capture buffer
       const results = await gestureRecognizer.recognizeForVideo(video, ts);
       if (results.gestures && results.gestures.length > 0) {
         // send gestures to main process via IPC
-        window.appBridge.sendGesture(results);
+        await window.appBridge.sendGesture(results);
       }
 
       // draw results
@@ -82,7 +82,7 @@ async function main() {
     } catch (e) {
       console.error(e.message + "Detection error");
     }
-    requestAnimationFrame(() => detect(gestureRecognizer));
+    requestAnimationFrame(async () => detect(gestureRecognizer));
   }
 }
 

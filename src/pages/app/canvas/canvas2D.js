@@ -4,9 +4,9 @@ import { GestureRecognizer } from "@mediapipe/tasks-vision";
 
 async function draw(results, canvas, canvasCtx, drawingUtils) {
   canvasCtx.save();
+  canvas.width = window.screen.width / 6;
+  canvas.height = window.screen.height / 6;
   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-  canvas.width = window.screen.width;
-  canvas.height = window.screen.height;
 
   if (results.landmarks) {
     for (const landmarks of results.landmarks) {
@@ -18,16 +18,16 @@ async function draw(results, canvas, canvasCtx, drawingUtils) {
           lineWidth: 1,
         }
       );
-      drawingUtils.drawLandmarks(landmarks, {
+      /*       drawingUtils.drawLandmarks(landmarks, {
         color: "#5555FF",
-        lineWidth: 0.5,
-      });
+        lineWidth: 0.2,
+      }); */
       const indexFingerTip = [landmarks[8]];
       drawingUtils.drawLandmarks(indexFingerTip, {
         color: "#ffffffff",
         fillColor: "#ffffff73",
-        lineWidth: 3,
-        radius: 25,
+        lineWidth: 2,
+        radius: 15,
       });
     }
   }

@@ -157,7 +157,7 @@ app.whenReady().then(() => {
   // IPC MAIN PROCESS LISTENERS HERE
 
   /// get gestures from renderer
-  ipcMain.on("gestures-channel", (_event, result) => {
+  ipcMain.on("gestures-channel", async (_event, result) => {
     const gesture = result.gestures[0][0].categoryName;
     if (!gesture) {
       //console.log("No gesture received / detected");
