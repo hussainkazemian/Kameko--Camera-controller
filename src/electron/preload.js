@@ -12,14 +12,13 @@ contextBridge.exposeInMainWorld("appBridge", {
 
   // gesturet
   sendGesture: (gesture) => {
-    console.log("sendGesture called with gesture:", gesture);
+    // console.log("sendGesture called with gesture:", gesture);
     ipcRenderer.send("gestures-channel", gesture);
   },
 
   // infobox
-  sendInfoBox: (rectX, rectY) => {
-    console.log("sendInfoBox called with box:", { rectX, rectY });
-    ipcRenderer.send("infobox-channel", { rectX, rectY });
+  sendInfoBox: (rectX, rectY, rectBottom, rectRight) => {
+    ipcRenderer.send("infobox-channel", rectX, rectY, rectBottom, rectRight);
   },
 
   // Return the runtime resources path (useful in packaged apps)

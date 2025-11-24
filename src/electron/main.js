@@ -9,6 +9,7 @@ const {
   ipcMain,
 } = require("electron");
 import { mouse, Point, keyboard, Key } from "@nut-tree-fork/nut-js";
+import { overlay } from "three/tsl";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -21,6 +22,7 @@ let settingsWindow = null;
 let isQuitting = false;
 
 //
+let indexFingerTip;
 let indexX;
 let indexY;
 
@@ -165,10 +167,9 @@ app.whenReady().then(async () => {
       return;
     }
     // indexfingingertip coords
-    const indexFingerTip = result.landmarks[0][8];
+    indexFingerTip = result.landmarks[0][8];
     indexX = monitor.width - indexFingerTip.x * monitor.width;
     indexY = indexFingerTip.y * monitor.height;
-    console.log(indexX, indexY);
 
     // Handedness
     const hand = result.handedness[0][0];
@@ -249,18 +250,32 @@ app.whenReady().then(async () => {
     }
 
     lastGesture = gesture;
+
+    //console.log("sormi: ", indexX, indexY);
   });
 
   // get infoBox position from renderer
-  ipcMain.on("infobox-channel", (_event, { rectX, rectY }) => {
-    console.log("InfoBox received in main process:", { rectX, rectY });
-    console.log(rectX, rectY);
-
-    // fingertip x y comparison to infobox position
-    if (indexX == rectX) {
-      console.log("hit");
+  ipcMain.on(
+    "infobox-channel",
+    (_event, { rectX, rectY, rectBottom, rectRight }) => {
+      console.log(
+        "InfoBox received in main process:",
+        rectX,
+        rectY,
+        rectBottom,
+        rectRight
+      );
+      if (
+        indexX > rectX &&
+        indexX < rectRight &&
+        indexY > rectY &&
+        indexY < rectBottom
+      ) {
+        console.log("Index finger is inside the InfoBox");
+        // You can add additional actions here if needed
+      }
     }
-  });
+  );
 
   // ELECTRON APP EVENTS
 

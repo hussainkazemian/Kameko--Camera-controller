@@ -67,13 +67,42 @@ h1 {
   box-shadow: 0 0 6px #e74c3c;
   vertical-align: middle;
 }
+/* -----------------  */
+
 #info {
   position: absolute;
   top: 5%;
   right: 5%;
-  color: #ddd;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 14px;
+}
+#mark {
+  float: right;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 12px;
+  width: 12px;
+  padding: 1rem;
+  color: white;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-size: 2em;
+  border-radius: 50px;
+  border: solid 2px rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, 0.61);
+  position: relative;
+}
+
+#ohjeet {
+  display: none;
+  height: auto;
+  width: 5em;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2em;
+  border-radius: 20px;
+  border: solid 2px rgb(255, 255, 255);
+  background-color: rgba(255, 255, 255, 0.43);
+}
+#info:hover #ohjeet {
+  display: block;
 }

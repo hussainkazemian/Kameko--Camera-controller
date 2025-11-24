@@ -12,15 +12,20 @@ async function main() {
   const video = document.getElementById("video");
   const deviceContainer = document.getElementById("camera-select");
   const deviceSelect = document.getElementById("devices");
+  const monitor = {
+    width: window.screen.width,
+    height: window.screen.height,
+  };
 
-  const infoBox = document.getElementById("info");
-  infoBox.style.backgroundColor = "blue";
+  const infoBox = document.getElementById("mark");
   const rect = infoBox.getBoundingClientRect();
   const rectX = rect.x;
   const rectY = rect.y;
+  const rectBottom = rect.bottom;
+  const rectRight = rect.right;
   console.log(`InfoBox position - X: ${rectX}, Y: ${rectY}`);
   // send box element trough ipc
-  window.appBridge.sendInfoBox(rectX, rectY);
+  window.appBridge.sendInfoBox({ rectX, rectY, rectBottom, rectRight });
 
   if (!canvas || !video) {
     console.error("Canvas or video element not found in DOM");
@@ -86,9 +91,33 @@ async function main() {
       const results = await gestureRecognizer.recognizeForVideo(video, ts);
       if (results.gestures && results.gestures.length > 0) {
         const gesture = results.gestures[0][0];
-        console.log(gesture.categoryName);
+        //console.log(gesture.categoryName);
         // send gestures to main process via IPC
         window.appBridge.sendGesture(results);
+      }
+      // -------- FOR SHOWING THE GESTURE CONTROLS ------------
+      if (results.landmarks && results.landmarks.length > 0) {
+        // indexfingingertip coords
+        const indexFingerTip = results.landmarks[0][8];
+        const indexX = monitor.width - indexFingerTip.x * monitor.width;
+        const indexY = indexFingerTip.y * monitor.height;
+
+        // infobox doms
+        const controlInstructions = document.getElementById("ohjeet");
+
+        // function to check if indexfinger is inside the box
+        if (
+          indexX >= rectX &&
+          indexX <= rectRight &&
+          indexY >= rectY &&
+          indexY <= rectBottom
+        ) {
+          console.log("Index finger is inside the box.");
+
+          controlInstructions.style.display = "block";
+        } else {
+          controlInstructions.style.display = "none";
+        }
       }
 
       // draw results
@@ -96,6 +125,7 @@ async function main() {
     } catch (e) {
       console.error(e.message + "Detection error");
     }
+
     requestAnimationFrame(() => detect(gestureRecognizer));
   }
 }
