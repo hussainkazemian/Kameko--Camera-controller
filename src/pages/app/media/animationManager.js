@@ -1,6 +1,6 @@
 class AnimationManager {
   tasks = new Set();
-  fps = 30; // Target FPS
+  fps = 60; // Target FPS
   lastFrameTime = performance.now();
   animationId = null; // Store the animation frame ID
 
