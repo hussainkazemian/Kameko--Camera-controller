@@ -1,5 +1,6 @@
 // Camera permissions and device management utilities.
 // Exposes: requestStream(deviceId?), enumerateVideoInputs(), stopStream(stream|videoEl)
+//import { animationManager } from "./animationManager";
 export function stopStream(target) {
   const stream = target && target.srcObject ? target.srcObject : target;
   if (stream && stream.getTracks) {
@@ -13,8 +14,8 @@ export async function requestStream(videoEl, deviceId, callback) {
   const constraints = {
     video: {
       deviceId: { exact: deviceId },
-      width: 640,
-      height: 360,
+      width: 320,
+      height: 180,
       resizeMode: "crop-and-scale",
     },
     audio: false,

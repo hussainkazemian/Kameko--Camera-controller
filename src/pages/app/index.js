@@ -3,6 +3,7 @@ import { draw } from "./canvas/canvas2D";
 import { DrawingUtils } from "@mediapipe/tasks-vision";
 import { requestStream, enumerateVideoInputs } from "./media/camera";
 import { initGestureRecognizer } from "./media/mediapipe";
+import { animationManager } from "./media/animationManager";
 
 // Entry bootstrapping of the renderer app.
 async function main() {
@@ -12,6 +13,8 @@ async function main() {
   const video = document.getElementById("video");
   const deviceContainer = document.getElementById("camera-select");
   const deviceSelect = document.getElementById("devices");
+  let gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
+
   if (!canvas || !video) {
     console.error("Canvas or video element not found in DOM");
     if (status) status.textContent = "Error: canvas/video element not found.";
@@ -64,14 +67,14 @@ async function main() {
     });
   }
 
-  async function detect(gestureRecognizer = undefined) {
-    if (!gestureRecognizer) {
+  function detect() {
+    /*     if (!gestureRecognizer) {
       console.log("Loading hand model...");
       gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
-    }
+    } */
     try {
-      const ts = performance.now() - 50; // added a 50 millisecond delay to prevent Failuer to reserve output capture buffer
-      const results = await gestureRecognizer.recognizeForVideo(video, ts);
+      const ts = performance.now(); // added a 50 millisecond delay to prevent Failuer to reserve output capture buffer
+      const results = gestureRecognizer.recognizeForVideo(video, ts);
       if (results.gestures && results.gestures.length > 0) {
         // send gestures to main process via IPC
         window.appBridge.sendGesture(results);
@@ -82,7 +85,8 @@ async function main() {
     } catch (e) {
       console.error(e.message + "Detection error");
     }
-    requestAnimationFrame(() => detect(gestureRecognizer));
+    // requestAnimationFrame(detect);
+    animationManager.registerTask(detect);
   }
 }
 

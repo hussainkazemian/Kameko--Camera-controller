@@ -21,7 +21,7 @@ export async function initGestureRecognizer() {
         baseOptions: {
           modelAssetPath: "models/gesture_recognizer.task",
 
-          delegate: "GPU",
+          delegate: "CPU",
         },
         runningMode: "VIDEO",
         numHands: 2,
