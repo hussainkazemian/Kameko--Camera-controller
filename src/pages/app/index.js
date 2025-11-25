@@ -11,6 +11,7 @@ async function main() {
   const status = document.getElementById("status");
   const canvas = document.getElementById("canvas");
   const video = document.getElementById("video");
+
   const deviceContainer = document.getElementById("camera-select");
   const deviceSelect = document.getElementById("devices");
   let gestureRecognizer = (await initGestureRecognizer()).gestureRecognizer;
@@ -20,6 +21,17 @@ async function main() {
     if (status) status.textContent = "Error: canvas/video element not found.";
     return;
   }
+  const monitor = {
+    width: window.screen.width,
+    height: window.screen.height,
+  };
+
+  const infoBox = document.getElementById("mark");
+  const rect = infoBox.getBoundingClientRect();
+  const rectX = rect.x;
+  const rectY = rect.y;
+  const rectBottom = rect.bottom;
+  const rectRight = rect.right;
 
   // for 2D canvas
   const canvasCtx = canvas.getContext("2d");
@@ -78,6 +90,30 @@ async function main() {
       if (results.gestures && results.gestures.length > 0) {
         // send gestures to main process via IPC
         window.appBridge.sendGesture(results);
+      }
+      // -------- FOR SHOWING THE GESTURE CONTROLS ------------
+      if (results.landmarks && results.landmarks.length > 0) {
+        // indexfingingertip coords
+        const indexFingerTip = results.landmarks[0][8];
+        const indexX = monitor.width - indexFingerTip.x * monitor.width;
+        const indexY = indexFingerTip.y * monitor.height;
+
+        // infobox doms
+        const controlInstructions = document.getElementById("ohjeet");
+
+        // function to check if indexfinger is inside the box
+        if (
+          indexX >= rectX &&
+          indexX <= rectRight &&
+          indexY >= rectY &&
+          indexY <= rectBottom
+        ) {
+          console.log("Index finger is inside the box.");
+
+          controlInstructions.style.display = "block";
+        } else {
+          controlInstructions.style.display = "none";
+        }
       }
 
       // draw results
