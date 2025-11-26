@@ -9,9 +9,29 @@
     />
     <script src="./bundle.js" defer></script>
     <link rel="stylesheet" href="./overlay.css" />
+
+    <style>
+      #left,
+      #right {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: 25vw;
+      }
+      #left {
+        left: 0;
+        background: rgba(255, 0, 0, 0.2);
+      }
+      #right {
+        right: 0;
+        background: rgba(0, 0, 255, 0.2);
+      }
+    </style>
   </head>
 
   <body>
+    <div id="left">left</div>
+    <div id="right">right</div>
     <div id="canvas-container">
       <!-- <h1>Digital Twin-Nokia</h1> -->
       <video id="video" autoplay playsinline muted></video>
@@ -31,10 +51,12 @@
         </div>
       </div>
     </div>
+
     <div id="camera-select" style="margin-top: 10px; display: none">
       <label for="devices">Choose camera:</label>
       <select id="devices"></select>
     </div>
     <div id="status" class="status"></div>
+    <script></script>
   </body>
 </html>

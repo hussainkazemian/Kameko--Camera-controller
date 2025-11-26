@@ -159,14 +159,43 @@ app.whenReady().then(() => {
   /// get gestures from renderer
   ipcMain.on("gestures-channel", (_event, result) => {
     const gesture = result.gestures[0][0].categoryName;
+    console.log("Detected gesture:", gesture);
     if (!gesture) {
       //console.log("No gesture received / detected");
 
       return;
     }
-    // Handedness
-    //const hand = result.handedness[0][0];
-    // console.log("handu:", hand.categoryName);
+    const indexFingerTip = result.landmarks[0][8];
+    const indexX = monitor.width - indexFingerTip.x * monitor.width;
+    //console.log("Index finger X position:", indexX);
+    if (indexX < monitor.width * 0.25 && gesture === "Open_Hand") {
+      //console.log("vasemmalla");
+      keyboard.pressKey(Key.A);
+      keyboard.releaseKey(Key.D);
+    } else if (indexX > monitor.width * 0.75 && gesture === "Open_Hand") {
+      //console.log("oikealla");
+      keyboard.pressKey(Key.D);
+    } else {
+      keyboard.releaseKey(Key.A);
+      keyboard.releaseKey(Key.D);
+    }
+
+    // let suunta;
+
+    // for (const landmarks of result.landmarks) {
+    //   const wrist = landmarks[0].x;
+    //   const sormi = landmarks[8].x;
+
+    //   if (sormi < wrist) {
+    //     // console.log("oikea");
+    //     suunta = "oikea";
+    //     console.log(suunta);
+    //   } else {
+    //     // console.log("vasen");
+    //     suunta = "vasen";
+    //     console.log(suunta);
+    //   }
+    // }
 
     // ____________________
     // Gesture recognition
@@ -223,7 +252,8 @@ app.whenReady().then(() => {
       // Victory: { key: Key.D, label: "D" },
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
-      Point_Side: { key: Key.D, label: "D" },
+      // Point_Side: { key: Key.D, label: "D" },
+      Close: { key: Key.Escape, label: "Escape" },
     };
 
     const leftGestureObject = {
@@ -232,7 +262,8 @@ app.whenReady().then(() => {
       // Victory: { key: Key.A, label: "A" },
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
-      Point_Side: { key: Key.A, label: "A" },
+      // Point_Side: { key: Key.A, label: "A" },
+      Close: { key: Key.Escape, label: "Escape" },
     };
 
     const rightGestureKey = rightGestureObject[rightGesture];
