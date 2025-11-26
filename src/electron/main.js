@@ -200,17 +200,39 @@ app.whenReady().then(() => {
       None
     */
 
+    // OWN GESTURES:
+    /*
+      Close
+      Fist
+      Middle_Finger_Up
+      Open_Hand
+      Point_Down
+      Point_Up
+      Point_Side
+      Thumb_Down
+      Thumb_Up
+      Two_Fingers_Up
+      Two_Fingers_Down
+
+      */
+
     // Gesture Object with gesturenames and corresponding keys ----------------
     const rightGestureObject = {
-      Thumb_Up: { key: Key.W, label: "W" },
+      // Thumb_Up: { key: Key.W, label: "W" },
+      // Thumb_Down: { key: Key.S, label: "S" },
+      // Victory: { key: Key.D, label: "D" },
+      Two_Fingers_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
-      Victory: { key: Key.D, label: "D" },
+      Point_Side: { key: Key.D, label: "D" },
     };
 
     const leftGestureObject = {
-      Thumb_Up: { key: Key.W, label: "W" },
+      // Thumb_Up: { key: Key.W, label: "W" },
+      // Thumb_Down: { key: Key.S, label: "S" },
+      // Victory: { key: Key.A, label: "A" },
+      Two_Fingers_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
-      Victory: { key: Key.A, label: "A" },
+      Point_Side: { key: Key.A, label: "A" },
     };
 
     const rightGestureKey = rightGestureObject[rightGesture];
@@ -258,7 +280,8 @@ app.whenReady().then(() => {
       const pointY = wristY * monitor.height;
 
       // MOUSE MOVEMENT GESTURE
-      if (rightGesture == "Closed_Fist" || rightGesture === "Pointing_Up") {
+      // if (rightGesture == "Closed_Fist" || rightGesture === "Pointing_Up") {
+      if (rightGesture == "Fist" || rightGesture === "Point_Up") {
         mousePosition.x = mousePosition.x - (lastposition.x - pointX);
         mousePosition.y = mousePosition.y - (lastposition.y - pointY);
         lastposition.x = pointX;
@@ -270,16 +293,18 @@ app.whenReady().then(() => {
         lastposition.x = pointX;
         lastposition.y = pointY;
       }
-      // mousePosition = lastposition; // <-- fixin the issue of jumpy mouse TEST THIS WITH DIGITSL TWIN!
     }
-    if (rightGesture === "Pointing_Up" && lastRightGesture !== "Pointing_Up") {
+    // if (rightGesture === "Pointing_Up" && lastRightGesture !== "Pointing_Up") {
+    if (rightGesture === "Point_Up" && lastRightGesture !== "Point_Up") {
       mouse.pressButton(Button.LEFT);
 
       //holding = true;
-    } else if (rightGesture !== "Pointing_Up") {
+      // } else if (rightGesture !== "Pointing_Up") {
+    } else if (rightGesture !== "Point_Up") {
       mouse.releaseButton(Button.LEFT);
     }
-    if (leftGesture === "Closed_Fist" && lastLeftGesture !== "Closed_Fist") {
+    // if (leftGesture === "Closed_Fist" && lastLeftGesture !== "Closed_Fist") {
+    if (leftGesture === "Fist" && lastLeftGesture !== "Fist") {
       keyboard.pressKey(Key.E);
       keyboard.releaseKey(Key.E);
     }

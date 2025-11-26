@@ -19,7 +19,8 @@ export async function initGestureRecognizer() {
       vision,
       {
         baseOptions: {
-          modelAssetPath: "models/gesture_recognizer.task",
+          // modelAssetPath: "models/gesture_recognizer.task",
+          modelAssetPath: "models/own_gestures.task",
 
           delegate: "GPU",
         },
@@ -34,7 +35,8 @@ export async function initGestureRecognizer() {
       vision,
       {
         baseOptions: {
-          modelAssetPath: "models/gesture_recognizer.task",
+          // modelAssetPath: "models/gesture_recognizer.task",
+          modelAssetPath: "models/own_gestures.task",
           delegate: "CPU",
         },
         runningMode: "VIDEO",
