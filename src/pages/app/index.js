@@ -89,6 +89,7 @@ async function main() {
       const results = gestureRecognizer.recognizeForVideo(video, ts);
       if (results.gestures && results.gestures.length > 0) {
         // send gestures to main process via IPC
+        console.log(results.gestures.map((g) => g.categoryName));
         window.appBridge.sendGesture(results);
       }
       // -------- FOR SHOWING THE GESTURE CONTROLS ------------

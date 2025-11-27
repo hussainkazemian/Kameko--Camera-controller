@@ -88,7 +88,7 @@ const createWindow = () => {
   });
 
   overlay.loadFile(path.join(dir, "overlay.html"));
-  // overlay.webContents.openDevTools();
+  //overlay.webContents.openDevTools();
   //Makes it so user can click an interract through window.
 
   overlay.setAlwaysOnTop(true, "screen-saver");
@@ -159,12 +159,16 @@ app.whenReady().then(() => {
   /// get gestures from renderer
   ipcMain.on("gestures-channel", (_event, result) => {
     const gesture = result.gestures[0][0].categoryName;
+
     console.log("Detected gesture:", gesture);
     if (!gesture) {
       //console.log("No gesture received / detected");
 
       return;
     }
+
+    // LEFT - RIGHT MOVEMENT BASED ON INDEX FINGER X POSITION WITH OPEN HAND
+
     const indexFingerTip = result.landmarks[0][8];
     const indexX = monitor.width - indexFingerTip.x * monitor.width;
     //console.log("Index finger X position:", indexX);
@@ -179,23 +183,6 @@ app.whenReady().then(() => {
       keyboard.releaseKey(Key.A);
       keyboard.releaseKey(Key.D);
     }
-
-    // let suunta;
-
-    // for (const landmarks of result.landmarks) {
-    //   const wrist = landmarks[0].x;
-    //   const sormi = landmarks[8].x;
-
-    //   if (sormi < wrist) {
-    //     // console.log("oikea");
-    //     suunta = "oikea";
-    //     console.log(suunta);
-    //   } else {
-    //     // console.log("vasen");
-    //     suunta = "vasen";
-    //     console.log(suunta);
-    //   }
-    // }
 
     // ____________________
     // Gesture recognition
@@ -212,26 +199,10 @@ app.whenReady().then(() => {
         leftGesture = result.gestures[i][0].categoryName;
       }
     }
-    // console.log(leftGesture, rightGesture);
-
-    // let currentGesture = gesture;
-    //console.log("Current gesture:", currentGesture);
-
-    // MEDIAPIPE GESTURES:
-    /*
-      Closed_Fist 
-      Open_Palm 
-      Pointing_Up 
-      Thumb_Down 
-      Thumb_Up 
-      Victory
-      ILoveYou🤘
-      None
-    */
 
     // OWN GESTURES:
     /*
-      Close
+      Pinch
       Fist
       Middle_Finger_Up
       Open_Hand
@@ -253,7 +224,7 @@ app.whenReady().then(() => {
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
       // Point_Side: { key: Key.D, label: "D" },
-      Close: { key: Key.Escape, label: "Escape" },
+      Pinch: { key: Key.Escape, label: "Escape" },
     };
 
     const leftGestureObject = {
@@ -263,7 +234,7 @@ app.whenReady().then(() => {
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Thumb_Down: { key: Key.S, label: "S" },
       // Point_Side: { key: Key.A, label: "A" },
-      Close: { key: Key.Escape, label: "Escape" },
+      Pinch: { key: Key.Escape, label: "Escape" },
     };
 
     const rightGestureKey = rightGestureObject[rightGesture];
