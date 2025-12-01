@@ -8,14 +8,7 @@ const {
   session,
   ipcMain,
 } = require("electron");
-import {
-  mouse,
-  Point,
-  keyboard,
-  Key,
-  Button,
-  right,
-} from "@nut-tree-fork/nut-js";
+import { mouse, Point, keyboard, Key, Button } from "@nut-tree-fork/nut-js";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -238,7 +231,7 @@ app.whenReady().then(() => {
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Two_Fingers_Down: { key: Key.S, label: "S" },
       // Point_Side: { key: Key.D, label: "D" },e
-      Pinch: { key: Key.Escape, label: "Escape" },
+      // Pinch: { key: Key.Escape, label: "Escape" },
     };
 
     const leftGestureObject = {
@@ -248,7 +241,7 @@ app.whenReady().then(() => {
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Two_Fingers_Down: { key: Key.S, label: "S" },
       // Point_Side: { key: Key.A, label: "A" },
-      Pinch: { key: Key.Escape, label: "Escape" },
+      // Pinch: { key: Key.Escape, label: "Escape" },
     };
 
     const rightGestureKey = rightGestureObject[rightGesture];
@@ -323,6 +316,10 @@ app.whenReady().then(() => {
     if (leftGesture === "Fist" && lastLeftGesture !== "Fist") {
       keyboard.pressKey(Key.E);
       keyboard.releaseKey(Key.E);
+    }
+    if (gesture === "Pinch") {
+      keyboard.pressKey(Key.Escape);
+      keyboard.releaseKey(Key.Escape);
     }
 
     lastRightGesture = rightGesture;
