@@ -317,8 +317,14 @@ app.whenReady().then(() => {
       keyboard.pressKey(Key.E);
       keyboard.releaseKey(Key.E);
     }
-    if (gesture === "Pinch") {
+    if (
+      gesture === "Pinch" &&
+      lastRightGesture !== "Pinch" &&
+      lastLeftGesture !== "Pinch"
+    ) {
       keyboard.pressKey(Key.Escape);
+      keyboard.releaseKey(Key.Escape);
+    } else {
       keyboard.releaseKey(Key.Escape);
     }
 
