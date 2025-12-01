@@ -8,7 +8,14 @@ const {
   session,
   ipcMain,
 } = require("electron");
-import { mouse, Point, keyboard, Key, Button } from "@nut-tree-fork/nut-js";
+import {
+  mouse,
+  Point,
+  keyboard,
+  Key,
+  Button,
+  right,
+} from "@nut-tree-fork/nut-js";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -191,7 +198,7 @@ app.whenReady().then(() => {
     const moveAreaLeft = monitor.width * 0.25;
     const moveAreaRight = monitor.width * 0.75;
 
-    if (gesture === "Open_Hand") {
+    if (leftGesture === "Open_Hand" || rightGesture === "Open_Hand") {
       if (indexX < moveAreaLeft) {
         // move left
         keyboard.pressKey(Key.A);
