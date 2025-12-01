@@ -92,7 +92,9 @@ async function main() {
         console.log(results.gestures.map((g) => g.categoryName));
         window.appBridge.sendGesture(results);
       }
+
       // -------- FOR SHOWING THE GESTURE CONTROLS ------------
+
       if (results.landmarks && results.landmarks.length > 0) {
         // indexfingingertip coords
         const indexFingerTip = results.landmarks[0][8];
@@ -109,7 +111,7 @@ async function main() {
           indexY >= rectY &&
           indexY <= rectBottom
         ) {
-          console.log("Index finger is inside the box.");
+          // console.log("Index finger is inside the box.");
 
           controlInstructions.style.display = "block";
         } else {

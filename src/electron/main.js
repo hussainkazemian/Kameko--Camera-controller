@@ -8,7 +8,14 @@ const {
   session,
   ipcMain,
 } = require("electron");
-import { mouse, Point, keyboard, Key, Button } from "@nut-tree-fork/nut-js";
+import {
+  mouse,
+  Point,
+  keyboard,
+  Key,
+  Button,
+  right,
+} from "@nut-tree-fork/nut-js";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -167,23 +174,6 @@ app.whenReady().then(() => {
       return;
     }
 
-    // LEFT - RIGHT MOVEMENT BASED ON INDEX FINGER X POSITION WITH OPEN HAND
-
-    const indexFingerTip = result.landmarks[0][8];
-    const indexX = monitor.width - indexFingerTip.x * monitor.width;
-    //console.log("Index finger X position:", indexX);
-    if (indexX < monitor.width * 0.25 && gesture === "Open_Hand") {
-      //console.log("vasemmalla");
-      keyboard.pressKey(Key.A);
-      keyboard.releaseKey(Key.D);
-    } else if (indexX > monitor.width * 0.75 && gesture === "Open_Hand") {
-      //console.log("oikealla");
-      keyboard.pressKey(Key.D);
-    } else {
-      keyboard.releaseKey(Key.A);
-      keyboard.releaseKey(Key.D);
-    }
-
     // ____________________
     // Gesture recognition
     let handRight;
@@ -197,6 +187,30 @@ app.whenReady().then(() => {
       } else {
         handLeft = result.landmarks[i];
         leftGesture = result.gestures[i][0].categoryName;
+      }
+    }
+
+    // LEFT - RIGHT MOVEMENT BASED ON INDEX FINGER X POSITION WITH OPEN HAND GESTURE
+
+    const indexFingerTip = result.landmarks[0][8];
+    const indexX = monitor.width - indexFingerTip.x * monitor.width;
+    //console.log("Index finger X position:", indexX);
+    const moveAreaLeft = monitor.width * 0.25;
+    const moveAreaRight = monitor.width * 0.75;
+
+    if (gesture === "Open_Hand") {
+      if (indexX < moveAreaLeft) {
+        // move left
+        keyboard.pressKey(Key.A);
+        keyboard.releaseKey(Key.D);
+      } else if (indexX > moveAreaRight) {
+        // move right
+        keyboard.pressKey(Key.D);
+        keyboard.releaseKey(Key.A);
+      } else {
+        // release keys
+        keyboard.releaseKey(Key.A);
+        keyboard.releaseKey(Key.D);
       }
     }
 
@@ -222,8 +236,8 @@ app.whenReady().then(() => {
       // Thumb_Down: { key: Key.S, label: "S" },
       // Victory: { key: Key.D, label: "D" },
       Two_Fingers_Up: { key: Key.W, label: "W" },
-      Thumb_Down: { key: Key.S, label: "S" },
-      // Point_Side: { key: Key.D, label: "D" },
+      Two_Fingers_Down: { key: Key.S, label: "S" },
+      // Point_Side: { key: Key.D, label: "D" },e
       Pinch: { key: Key.Escape, label: "Escape" },
     };
 
@@ -232,7 +246,7 @@ app.whenReady().then(() => {
       // Thumb_Down: { key: Key.S, label: "S" },
       // Victory: { key: Key.A, label: "A" },
       Two_Fingers_Up: { key: Key.W, label: "W" },
-      Thumb_Down: { key: Key.S, label: "S" },
+      Two_Fingers_Down: { key: Key.S, label: "S" },
       // Point_Side: { key: Key.A, label: "A" },
       Pinch: { key: Key.Escape, label: "Escape" },
     };

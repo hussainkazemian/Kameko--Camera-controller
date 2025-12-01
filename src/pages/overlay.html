@@ -9,29 +9,9 @@
     />
     <script src="./bundle.js" defer></script>
     <link rel="stylesheet" href="./overlay.css" />
-
-    <style>
-      #left,
-      #right {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        width: 25vw;
-      }
-      #left {
-        left: 0;
-        background: rgba(255, 0, 0, 0.2);
-      }
-      #right {
-        right: 0;
-        background: rgba(0, 0, 255, 0.2);
-      }
-    </style>
   </head>
 
   <body>
-    <div id="left">left</div>
-    <div id="right">right</div>
     <div id="canvas-container">
       <!-- <h1>Digital Twin-Nokia</h1> -->
       <video id="video" autoplay playsinline muted></video>
@@ -42,12 +22,15 @@
           <p>?</p>
         </div>
         <div id="ohjeet">
-          <p>ELE: W</p>
-          <p>ELE: A</p>
-          <p>ELE: S</p>
-          <p>ELE: D</p>
-          <p>ELE: E</p>
-          <p>ELE: Hiiri</p>
+          <h1>Controls:</h1>
+          <p><strong>W:</strong> Two Fingers Up</p>
+          <p><strong>A:</strong> Hand to left side of screen: A</p>
+          <p><strong>S:</strong> Two Fingers / Hand down</p>
+          <p><strong>D:</strong> Hand to right side of screen: D</p>
+          <p><strong>E:</strong> Left Hand Fist</p>
+          <p><strong>Mouse:</strong> Right Hand Fist</p>
+
+          <p><strong>Mouse Click:</strong> Right Hand Point Up</p>
         </div>
       </div>
     </div>
