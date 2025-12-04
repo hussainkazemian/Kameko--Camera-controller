@@ -8,14 +8,7 @@ const {
   session,
   ipcMain,
 } = require("electron");
-import {
-  mouse,
-  Point,
-  keyboard,
-  Key,
-  Button,
-  right,
-} from "@nut-tree-fork/nut-js";
+import { mouse, Point, keyboard, Key, Button } from "@nut-tree-fork/nut-js";
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -107,6 +100,8 @@ const createWindow = () => {
     overlay.focus();
   }); */ // DISABLED FOR TESTING REASONS
 
+  // ----- SETTINGS (DOCUMENT) WINDOW -----
+
   let settingsWindow = new BrowserWindow({
     width,
     height,
@@ -117,7 +112,6 @@ const createWindow = () => {
   });
 
   settingsWindow.loadFile(path.join(dir, "settings.html"));
-  //closing windows now wont delete the windows but hide it
   settingsWindow.on("close", (e) => {
     if (!isQuitting) {
       e.preventDefault();
@@ -215,6 +209,7 @@ app.whenReady().then(() => {
     }
 
     // OWN GESTURES:
+
     /*
       Pinch
       Fist
@@ -227,28 +222,27 @@ app.whenReady().then(() => {
       Thumb_Up
       Two_Fingers_Up
       Two_Fingers_Down
+      Palm_Down
 
       */
 
-    // Gesture Object with gesturenames and corresponding keys ----------------
+    // Gesture Object with gesturenames and corresponding keys -
+
     const rightGestureObject = {
       // Thumb_Up: { key: Key.W, label: "W" },
       // Thumb_Down: { key: Key.S, label: "S" },
-      // Victory: { key: Key.D, label: "D" },
+
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Two_Fingers_Down: { key: Key.S, label: "S" },
-      // Point_Side: { key: Key.D, label: "D" },e
-      // Pinch: { key: Key.Escape, label: "Escape" },
+      Palm_Down: { key: Key.S, label: "S" },
     };
 
     const leftGestureObject = {
       // Thumb_Up: { key: Key.W, label: "W" },
       // Thumb_Down: { key: Key.S, label: "S" },
-      // Victory: { key: Key.A, label: "A" },
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Two_Fingers_Down: { key: Key.S, label: "S" },
-      // Point_Side: { key: Key.A, label: "A" },
-      // Pinch: { key: Key.Escape, label: "Escape" },
+      Palm_Down: { key: Key.S, label: "S" },
     };
 
     const rightGestureKey = rightGestureObject[rightGesture];
