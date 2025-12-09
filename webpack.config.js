@@ -58,7 +58,7 @@ module.exports = [
           { from: "node_modules/@mediapipe/tasks-vision/wasm", to: "wasm" },
           // copy renderer html and models
           { from: "src/pages/overlay.html", to: "overlay.html" },
-          { from: "src/pages/settings.html", to: "settings.html" },
+          { from: "src/pages/documentation.html", to: "documentation.html" },
 
           {
             from: "models/gesture_recognizer.task",
@@ -72,6 +72,11 @@ module.exports = [
           { from: "assets/icon.icns", to: "icon.icns", noErrorOnMissing: true },
           // copy images folder if present (for tray/window icons like webcam2.png)
           { from: "src/images", to: "images", noErrorOnMissing: true },
+          {
+            from: "src/images/icons",
+            to: "images/icons",
+            noErrorOnMissing: true,
+          },
         ],
       }),
       new MiniCssExtractPlugin({ filename: "overlay.css" }),

@@ -26,6 +26,7 @@ async function main() {
     height: window.screen.height,
   };
 
+  // FOR GESTURE CONTROL INFO BOX
   const infoBox = document.getElementById("mark");
   const rect = infoBox.getBoundingClientRect();
   const rectX = rect.x;
@@ -93,7 +94,7 @@ async function main() {
         window.appBridge.sendGesture(results);
       }
 
-      // -------- FOR SHOWING THE GESTURE CONTROLS ------------
+      // -------- FOR SHOWING THE GESTURE CONTROLS INFO BOX ------------
 
       if (results.landmarks && results.landmarks.length > 0) {
         // indexfingingertip coords
@@ -111,8 +112,6 @@ async function main() {
           indexY >= rectY &&
           indexY <= rectBottom
         ) {
-          // console.log("Index finger is inside the box.");
-
           controlInstructions.style.display = "block";
         } else {
           controlInstructions.style.display = "none";

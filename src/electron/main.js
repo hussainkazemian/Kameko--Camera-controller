@@ -17,7 +17,7 @@ const path = require("path");
 
 // save a reference to the Tray object globally to avoid garbage collection
 let tray = null;
-let settingsWindow = null;
+let documentWindow = null;
 let isQuitting = false;
 
 const dir = __dirname;
@@ -100,22 +100,22 @@ const createWindow = () => {
     overlay.focus();
   }); */ // DISABLED FOR TESTING REASONS
 
-  // ----- SETTINGS (DOCUMENT) WINDOW -----
+  // ----- DOCUMENT WINDOW -----
 
-  let settingsWindow = new BrowserWindow({
-    width,
+  let documentWindow = new BrowserWindow({
+    width: width * 0.5,
     height,
     resizable: true,
     frame: true,
-    title: "Settings",
+    title: "Documentation",
     icon: "./images/webcam_large2.png",
   });
 
-  settingsWindow.loadFile(path.join(dir, "settings.html"));
-  settingsWindow.on("close", (e) => {
+  documentWindow.loadFile(path.join(dir, "documentation.html"));
+  documentWindow.on("close", (e) => {
     if (!isQuitting) {
       e.preventDefault();
-      settingsWindow.hide();
+      documentWindow.hide();
     }
   });
 
@@ -148,16 +148,14 @@ app.whenReady().then(() => {
   const monitor = screen.getPrimaryDisplay().workAreaSize;
   let mousePosition = new Point(monitor.width / 2, monitor.height / 2);
   let lastposition = new Point(monitor.width / 2, monitor.height / 2);
-  //let holding = false;
 
-  // check last gesture
-  // let lastGesture = null;
+  // Check last gesture
   let lastRightGesture;
   let lastLeftGesture;
 
   // IPC MAIN PROCESS LISTENERS HERE
 
-  /// get gestures from renderer
+  /// Get gestures from renderer
   ipcMain.on("gestures-channel", (_event, result) => {
     const gesture = result.gestures[0][0].categoryName;
 
@@ -229,17 +227,12 @@ app.whenReady().then(() => {
     // Gesture Object with gesturenames and corresponding keys -
 
     const rightGestureObject = {
-      // Thumb_Up: { key: Key.W, label: "W" },
-      // Thumb_Down: { key: Key.S, label: "S" },
-
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Two_Fingers_Down: { key: Key.S, label: "S" },
       Palm_Down: { key: Key.S, label: "S" },
     };
 
     const leftGestureObject = {
-      // Thumb_Up: { key: Key.W, label: "W" },
-      // Thumb_Down: { key: Key.S, label: "S" },
       Two_Fingers_Up: { key: Key.W, label: "W" },
       Two_Fingers_Down: { key: Key.S, label: "S" },
       Palm_Down: { key: Key.S, label: "S" },
@@ -254,9 +247,7 @@ app.whenReady().then(() => {
 
     if (rightGestureKey) {
       keyboard.pressKey(rightGestureKey.key);
-      //keybordKey(rightGestureKey);
     } else if (!crossReference) {
-      //console.log("No gesture detected");
       Object.values(rightGestureObject).forEach(({ key }) => {
         keyboard.releaseKey(key);
       });
@@ -282,15 +273,12 @@ app.whenReady().then(() => {
 
     if (handRight) {
       // MOUSE MOVEMENT
-      //mouse.config.mouseSpeed = 30; // set mouse speed
-      // this did not work in game
       const wristX = handRight[0].x;
       const wristY = handRight[0].y;
       const pointX = monitor.width - wristX * monitor.width;
       const pointY = wristY * monitor.height;
 
       // MOUSE MOVEMENT GESTURE
-      // if (rightGesture == "Closed_Fist" || rightGesture === "Pointing_Up") {
       if (rightGesture == "Fist" || rightGesture === "Point_Up") {
         mousePosition.x = mousePosition.x - (lastposition.x - pointX);
         mousePosition.y = mousePosition.y - (lastposition.y - pointY);
@@ -304,16 +292,14 @@ app.whenReady().then(() => {
         lastposition.y = pointY;
       }
     }
-    // if (rightGesture === "Pointing_Up" && lastRightGesture !== "Pointing_Up") {
+    // MOUSE CLICKING GESTURE
     if (rightGesture === "Point_Up" && lastRightGesture !== "Point_Up") {
       mouse.pressButton(Button.LEFT);
-
-      //holding = true;
-      // } else if (rightGesture !== "Pointing_Up") {
     } else if (rightGesture !== "Point_Up") {
       mouse.releaseButton(Button.LEFT);
     }
-    // if (leftGesture === "Closed_Fist" && lastLeftGesture !== "Closed_Fist") {
+
+    // E KEY FOR INTERACTION GESTURE
     if (leftGesture === "Fist" && lastLeftGesture !== "Fist") {
       keyboard.pressKey(Key.E);
       keyboard.releaseKey(Key.E);
@@ -338,8 +324,8 @@ app.whenReady().then(() => {
   app.on("ready", createWindow);
 
   app.on("activate", () => {
-    if (settingsWindow && settingsWindow.isMinimized()) {
-      settingsWindow.show();
+    if (documentWindow && documentWindow.isMinimized()) {
+      documentWindow.show();
     }
     //overlay.show();
   });
